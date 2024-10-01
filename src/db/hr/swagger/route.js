@@ -13,7 +13,7 @@ export const pathHrUser = {
 			produces: ['application/json'],
 			requestBody: SE.requestBody(
 				{
-					email: SE.string('admin@fzl.com'),
+					email: SE.string('admin@tsl.com'),
 					pass: SE.string('1234'),
 				},
 				['email', 'pass']

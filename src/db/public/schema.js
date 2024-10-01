@@ -1,4 +1,4 @@
-import { integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { integer, pgTable, pgSchema, text } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -8,7 +8,7 @@ import {
 
 import * as hrSchema from '../hr/schema.js';
 
-const publicSchema = pgTable('public');
+const publicSchema = pgSchema('publicSchema');
 
 export const buyer = publicSchema.table('buyer', {
 	uuid: uuid_primary,

@@ -8,7 +8,7 @@ import {
 
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
-import { add } from 'winston';
+import * as commercialSchema from '../commercial/schema.js';
 
 const store = pgSchema('store');
 
@@ -41,7 +41,7 @@ export const vendor = store.table('vendor', {
 
 export const receive = store.table('receive', {
 	uuid: uuid_primary,
-	vendor_uuid: defaultUUID('vendor_uuid').references(() => store.vendor.uuid),
+	vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid),
 	lc_uuid: defaultUUID('lc_uuid').references(() => commercialSchema.lc.uuid),
 	is_import: integer('is_import').default(0),
 	commercial_invoice_number: text('commercial_invoice_number').notNull(),
@@ -55,9 +55,7 @@ export const receive = store.table('receive', {
 
 export const issue = store.table('issue', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid').references(
-		() => store.material.uuid
-	),
+	material_uuid: defaultUUID('material_uuid').references(() => material.uuid),
 	quantity: PG_DECIMAL('quantity').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
@@ -67,12 +65,8 @@ export const issue = store.table('issue', {
 
 export const receive_entry = store.table('receive_entry', {
 	uuid: uuid_primary,
-	receive_uuid: defaultUUID('receive_uuid').references(
-		() => store.receive.uuid
-	),
-	material_uuid: defaultUUID('material_uuid').references(
-		() => store.material.uuid
-	),
+	receive_uuid: defaultUUID('receive_uuid').references(() => receive.uuid),
+	material_uuid: defaultUUID('material_uuid').references(() => material.uuid),
 	quantity: PG_DECIMAL('quantity').notNull(),
 	price: PG_DECIMAL('price').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

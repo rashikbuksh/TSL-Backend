@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import { createApi } from '../../../util/api.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as commercialSchema from '../../commercial/schema.js';
@@ -162,5 +163,38 @@ export async function select(req, res, next) {
 			error,
 			res,
 		});
+	}
+}
+
+export async function selectReceiveEntryDetails(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { receive_uuid } = req.params;
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/${receive_uuid}`)
+				.then((response) => response);
+
+		const [receive, receive_entry] = await Promise.all([
+			fetchData('/store/receive'),
+			fetchData('/store/receive-entry/by'),
+		]);
+
+		const response = {
+			...receive?.data?.data,
+			receive_entry: receive_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'receive_entry Details Full',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
 	}
 }

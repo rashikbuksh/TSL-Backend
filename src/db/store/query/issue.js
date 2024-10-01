@@ -4,7 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
+import hr, * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { issue } from '../schema.js';
@@ -91,7 +91,7 @@ export async function selectAll(req, res, next) {
 			material_uuid: issue.material_uuid,
 			quantity: issue.quantity,
 			created_by: issue.created_by,
-			created_by_name: issue.created_by_name,
+			created_by_name: hrSchema.users.name,
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,
@@ -123,7 +123,7 @@ export async function select(req, res, next) {
 			material_uuid: issue.material_uuid,
 			quantity: issue.quantity,
 			created_by: issue.created_by,
-			created_by_name: issue.created_by_name,
+			created_by_name: hrSchema.users.name,
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,

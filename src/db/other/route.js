@@ -13,8 +13,13 @@ otherRouter.get('/category/value/label', otherOperations.selectCategory);
 //public article
 otherRouter.get('/article/value/label', otherOperations.selectArticle);
 
-//public buyer swagger route
-const pathBuyer = {
+// hr user, department, designation
+otherRouter.get('/department/value/label', otherOperations.selectDepartment);
+otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
+otherRouter.get('/designation/value/label', otherOperations.selectDesignation);
+
+//public buyer , category, article swagger route
+const pathPublic = {
 	'/other/buyer/value/label': {
 		get: {
 			operationId: 'selectBuyer',
@@ -45,11 +50,6 @@ const pathBuyer = {
 			},
 		},
 	},
-};
-
-//public category swagger route
-
-const pathCategory = {
 	'/other/category/value/label': {
 		get: {
 			operationId: 'selectCategory',
@@ -80,11 +80,7 @@ const pathCategory = {
 			},
 		},
 	},
-};
 
-//public article swagger route
-
-const pathArticle = {
 	'/other/article/value/label': {
 		get: {
 			operationId: 'selectArticle',
@@ -116,11 +112,104 @@ const pathArticle = {
 		},
 	},
 };
+// hr user, department, designation swagger route
+
+const pathHr = {
+	'/other/department/value/label': {
+		get: {
+			operationId: 'selectDepartment',
+			tags: ['other'],
+			summary: 'Select Department',
+			description: 'Select Department',
+			responses: {
+				200: {
+					description: 'Returns a all departments.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'department 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/hr/user/value/label': {
+		get: {
+			operationId: 'selectHrUser',
+			tags: ['other'],
+			summary: 'Select Hr User',
+			description: 'Select Hr User',
+			responses: {
+				200: {
+					description: 'Returns a all hr users.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'hr user 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/designation/value/label': {
+		get: {
+			operationId: 'selectDesignation',
+			tags: ['other'],
+			summary: 'Select Designation',
+			description: 'Select Designation',
+			responses: {
+				200: {
+					description: 'Returns a all designations.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'designation 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
 
 export const pathOther = {
-	...pathBuyer,
-	...pathCategory,
-	...pathArticle,
+	...pathPublic,
+	...pathHr,
 };
 
 export const tagOther = [

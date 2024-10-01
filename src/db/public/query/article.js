@@ -7,7 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
-import { article } from '../schema.js';
+import { article, buyer } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -89,6 +89,8 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: article.uuid,
 			name: article.name,
+			buyer_uuid: article.buyer_uuid,
+			buyer_name: buyer.name,
 			created_by: article.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: article.created_at,
@@ -97,6 +99,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(article)
 		.leftJoin(hrSchema.users, eq(article.created_by, hrSchema.users.uuid))
+		.leftJoin(buyer, eq(article.buyer_uuid, buyer.uuid))
 		.orderBy(desc(article.created_at));
 
 	const toast = {
@@ -115,6 +118,8 @@ export async function select(req, res, next) {
 		.select({
 			uuid: article.uuid,
 			name: article.name,
+			buyer_uuid: article.buyer_uuid,
+			buyer_name: buyer.name,
 			created_by: article.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: article.created_at,
@@ -123,6 +128,7 @@ export async function select(req, res, next) {
 		})
 		.from(article)
 		.leftJoin(hrSchema.users, eq(article.created_by, hrSchema.users.uuid))
+		.leftJoin(buyer, eq(article.buyer_uuid, buyer.uuid))
 		.where(eq(article.uuid, req.params.uuid));
 
 	try {

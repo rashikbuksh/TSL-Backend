@@ -26,7 +26,7 @@ export const defCommercial = {
 
 export const tagCommercial = [
 	{
-		name: 'commercial.Lc',
+		name: 'commercial.lc',
 		description: 'Commercial',
 	},
 ];

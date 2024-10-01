@@ -15,7 +15,7 @@ export async function insert(req, res, next) {
 	const articlePromise = db
 		.insert(article)
 		.values(req.body)
-		.returning({ insertedName: buyer.name });
+		.returning({ insertedName: article.name });
 
 	try {
 		const data = await articlePromise;
@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const articlePromise = db
 		.update(article)
 		.set(req.body)
-		.where(eq(article.uuid, req.body.uuid))
+		.where(eq(article.uuid, req.params.uuid))
 		.returning({ updatedName: article.name });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const articlePromise = db
 		.remove(article)
-		.where(eq(article.uuid, req.body.uuid))
+		.where(eq(article.uuid, req.params.uuid))
 		.returning({ removedName: article.name });
 
 	try {
@@ -123,7 +123,7 @@ export async function select(req, res, next) {
 		})
 		.from(article)
 		.leftJoin(hrSchema.users, eq(article.created_by, hrSchema.users.uuid))
-		.where(eq(article.uuid, req.body.uuid));
+		.where(eq(article.uuid, req.params.uuid));
 
 	try {
 		const data = await articlePromise;

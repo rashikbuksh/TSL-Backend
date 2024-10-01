@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const buyerPromise = db
 		.update(buyer)
 		.set(req.body)
-		.where(eq(buyer.uuid, req.body.uuid))
+		.where(eq(buyer.uuid, req.params.uuid))
 		.returning({ updatedName: buyer.name });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const buyerPromise = db
 		.remove(buyer)
-		.where(eq(buyer.uuid, req.body.uuid))
+		.where(eq(buyer.uuid, req.params.uuid))
 		.returning({ removedName: buyer.name });
 
 	try {
@@ -123,7 +123,7 @@ export async function select(req, res, next) {
 		})
 		.from(buyer)
 		.leftJoin(hrSchema.users, eq(buyer.created_by, hrSchema.users.uuid))
-		.where(eq(buyer.uuid, req.body.uuid));
+		.where(eq(buyer.uuid, req.params.uuid));
 
 	try {
 		const data = await buyerPromise;

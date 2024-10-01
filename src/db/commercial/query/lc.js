@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const lcPromise = db
 		.update(lc)
 		.set(req.body)
-		.where(eq(lc.uuid, req.body.uuid))
+		.where(eq(lc.uuid, req.params.uuid))
 		.returning({ updatedUuid: lc.uuid });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const lcPromise = db
 		.delete(lc)
-		.where(eq(lc.uuid, req.body.uuid))
+		.where(eq(lc.uuid, req.params.uuid))
 		.returning({ deletedUuid: lc.uuid });
 
 	try {
@@ -89,7 +89,7 @@ export async function selectAll(req, res, next) {
 			number: lc.number,
 			date: lc.date,
 			created_by: lc.created_by,
-			created_by_name: hrSchema.employee.name,
+			created_by_name: hrSchema.users.name,
 			created_at: lc.created_at,
 			updated_at: lc.updated_at,
 			remarks: lc.remarks,
@@ -123,7 +123,7 @@ export async function select(req, res, next) {
 		})
 		.from(lc)
 		.leftJoin(hrSchema.users, eq(lc.created_by, hrSchema.users.uuid))
-		.where(eq(lc.uuid, req.body.uuid));
+		.where(eq(lc.uuid, req.params.uuid));
 
 	try {
 		const data = await lcPromise;

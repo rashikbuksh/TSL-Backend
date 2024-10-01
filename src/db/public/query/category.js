@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const categoryPromise = db
 		.update(category)
 		.set(req.body)
-		.where(eq(category.uuid, req.body.uuid))
+		.where(eq(category.uuid, req.params.uuid))
 		.returning({ updatedName: category.name });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const categoryPromise = db
 		.delete(category)
-		.where(eq(category.uuid, req.body.uuid))
+		.where(eq(category.uuid, req.params.uuid))
 		.returning({ deletedName: category.name });
 
 	try {
@@ -123,7 +123,7 @@ export async function select(req, res, next) {
 		})
 		.from(category)
 		.leftJoin(hrSchema.users, eq(category.created_by, hrSchema.users.uuid))
-		.where(eq(category.uuid, req.body.uuid))
+		.where(eq(category.uuid, req.params.uuid))
 		.orderBy(desc(category.created_at));
 
 	try {

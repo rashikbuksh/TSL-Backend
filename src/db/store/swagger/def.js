@@ -1,4 +1,3 @@
-import { article } from '@/db/public/schema';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 //* ./schema.js#material
@@ -130,7 +129,7 @@ export const defStore = {
 	vendor: defVendor,
 	receive: defReceive,
 	issue: defIssue,
-	receiveEntry: defReceiveEntry,
+	receive_entry: defReceiveEntry,
 };
 
 // * Tag

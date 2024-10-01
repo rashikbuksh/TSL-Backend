@@ -9,32 +9,32 @@ import * as issueOperations from './query/issue.js';
 const storeRouter = Router();
 
 storeRouter.post('/material', materialOperations.insert);
-storeRouter.post('/material/:uuid', materialOperations.update);
-storeRouter.post('/material/:uuid', materialOperations.remove);
+storeRouter.put('/material/:uuid', materialOperations.update);
+storeRouter.delete('/material/:uuid', materialOperations.remove);
 storeRouter.get('/material', materialOperations.selectAll);
 storeRouter.get('/material/:uuid', materialOperations.select);
 
-storeRouter.post('/receive_entry', receive_entryOperations.insert);
-storeRouter.post('/receive_entry/:uuid', receive_entryOperations.update);
-storeRouter.post('/receive_entry/:uuid', receive_entryOperations.remove);
-storeRouter.get('/receive_entry', receive_entryOperations.selectAll);
-storeRouter.get('/receive_entry/:uuid', receive_entryOperations.select);
+storeRouter.post('/receive-entry', receive_entryOperations.insert);
+storeRouter.put('/receive-entry/:uuid', receive_entryOperations.update);
+storeRouter.delete('/receive-entry/:uuid', receive_entryOperations.remove);
+storeRouter.get('/receive-entry', receive_entryOperations.selectAll);
+storeRouter.get('/receive-entry/:uuid', receive_entryOperations.select);
 
 storeRouter.post('/vendor', vendorOperations.insert);
-storeRouter.post('/vendor/:uuid', vendorOperations.update);
-storeRouter.post('/vendor/:uuid', vendorOperations.remove);
+storeRouter.put('/vendor/:uuid', vendorOperations.update);
+storeRouter.delete('/vendor/:uuid', vendorOperations.remove);
 storeRouter.get('/vendor', vendorOperations.selectAll);
 storeRouter.get('/vendor/:uuid', vendorOperations.select);
 
 storeRouter.post('/receive', receiveOperations.insert);
-storeRouter.post('/receive/:uuid', receiveOperations.update);
-storeRouter.post('/receive/:uuid', receiveOperations.remove);
+storeRouter.put('/receive/:uuid', receiveOperations.update);
+storeRouter.delete('/receive/:uuid', receiveOperations.remove);
 storeRouter.get('/receive', receiveOperations.selectAll);
 storeRouter.get('/receive/:uuid', receiveOperations.select);
 
 storeRouter.post('/issue', issueOperations.insert);
-storeRouter.post('/issue/:uuid', issueOperations.update);
-storeRouter.post('/issue/:uuid', issueOperations.remove);
+storeRouter.put('/issue/:uuid', issueOperations.update);
+storeRouter.delete('/issue/:uuid', issueOperations.remove);
 storeRouter.get('/issue', issueOperations.selectAll);
 storeRouter.get('/issue/:uuid', issueOperations.select);
 

@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const materialPromise = db
 		.update(material)
 		.set(req.body)
-		.where(eq(material.uuid, req.body.uuid))
+		.where(eq(material.uuid, req.params.uuid))
 		.returning({ updatedName: material.name });
 
 	try {
@@ -61,7 +61,7 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	const materialPromise = db
 		.delete(material)
-		.where(eq(material.uuid, req.body.uuid))
+		.where(eq(material.uuid, req.params.uuid))
 		.returning({ deletedName: material.name });
 
 	try {
@@ -126,7 +126,7 @@ export async function select(req, res, next) {
 		})
 		.from(material)
 		.leftJoin(hrSchema.users, eq(material.created_by, hrSchema.users.uuid))
-		.where(eq(material.uuid, req.body.uuid));
+		.where(eq(material.uuid, req.params.uuid));
 
 	try {
 		const data = await materialPromise;

@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const vendorPromise = db
 		.update(vendor)
 		.set(req.body)
-		.where(eq(vendor.uuid, req.body.uuid))
+		.where(eq(vendor.uuid, req.params.uuid))
 		.returning({ updatedName: vendor.name });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const vendorPromise = db
 		.delete(vendor)
-		.where(eq(vendor.uuid, req.body.uuid))
+		.where(eq(vendor.uuid, req.params.uuid))
 		.returning({ deletedName: vendor.name });
 
 	try {
@@ -83,6 +83,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	
 	const vendorPromise = db
 		.select({
 			uuid: vendor.uuid,
@@ -130,7 +131,7 @@ export async function select(req, res, next) {
 		})
 		.from(vendor)
 		.leftJoin(hrSchema.users, eq(vendor.created_by, hrSchema.users.uuid))
-		.where(eq(vendor.uuid, req.body.uuid));
+		.where(eq(vendor.uuid, req.params.uuid));
 
 	try {
 		const data = await vendorPromise;

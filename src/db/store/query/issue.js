@@ -7,7 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
-import { issue, material } from '../schema.js';
+import { issue } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const issuePromise = db
 		.update(issue)
 		.set(req.body)
-		.where(eq(issue.uuid, req.body.uuid))
+		.where(eq(issue.uuid, req.params.uuid))
 		.returning({ updatedUuid: issue.uuid });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const issuePromise = db
 		.delete(issue)
-		.where(eq(issue.uuid, req.body.uuid))
+		.where(eq(issue.uuid, req.params.uuid))
 		.returning({ deletedUuid: issue.uuid });
 
 	try {
@@ -83,6 +83,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
 	const issuePromise = db
 		.select({
 			uuid: issue.uuid,
@@ -113,6 +115,8 @@ export async function selectAll(req, res, next) {
 }
 
 export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
 	const issuePromise = db
 		.select({
 			uuid: issue.uuid,
@@ -126,7 +130,7 @@ export async function select(req, res, next) {
 		})
 		.from(issue)
 		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
-		.where(eq(issue.uuid, req.body.uuid));
+		.where(eq(issue.uuid, req.params.uuid));
 
 	try {
 		const data = await issuePromise;

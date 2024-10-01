@@ -49,24 +49,24 @@ export const defCategory = SED({
 // * Marge All
 
 export const defPublic = {
-	Buyer: defBuyer,
-	Article: defArticle,
-	Category: defCategory,
+	buyer: defBuyer,
+	article: defArticle,
+	category: defCategory,
 };
 
 // * Tag
 
 export const tagPublic = [
 	{
-		name: 'public.Buyer',
+		name: 'public.buyer',
 		description: 'Everything about your Buyers',
 	},
 	{
-		name: 'public.Article',
+		name: 'public.article',
 		description: 'Everything about your Articles',
 	},
 	{
-		name: 'public.Category',
+		name: 'public.category',
 		description: 'Everything about your Categories',
 	},
 ];

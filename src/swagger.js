@@ -4,15 +4,27 @@ import { PRODUCTION_URL, SERVER_URL } from './lib/secret.js';
 // HR
 import { defHr, tagHr } from './db/hr/swagger/def.js';
 import { pathHr } from './db/hr/swagger/route.js';
+import { defCommercial, tagCommercial } from './db/commercial/swagger/def.js';
+import { pathCommercial } from './db/commercial/swagger/route.js';
+import { defStore, tagStore } from './db/store/swagger/def.js';
+import { pathStore } from './db/store/swagger/route.js';
+import { defPublic, tagPublic } from './db/public/swagger/def.js';
+import { pathPublic } from './db/public/swagger/route.js';
 
-const tags = [...tagHr];
+const tags = [...tagHr, ...tagCommercial, ...tagStore, ...tagPublic];
 
 const definitions = {
 	hr: defHr,
+	commercial: defCommercial,
+	store: defStore,
+	public: defPublic,
 };
 
 const paths = {
 	...pathHr,
+	...pathCommercial,
+	...pathStore,
+	...pathPublic,
 };
 
 const swaggerSpec = swaggerJSDoc({

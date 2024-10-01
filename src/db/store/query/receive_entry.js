@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 	const receive_entryPromise = db
 		.update(receive_entry)
 		.set(req.body)
-		.where(eq(receive_entry.uuid, req.body.uuid))
+		.where(eq(receive_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: receive_entry.uuid });
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 
 	const receive_entryPromise = db
 		.delete(receive_entry)
-		.where(eq(receive_entry.uuid, req.body.uuid))
+		.where(eq(receive_entry.uuid, req.params.uuid))
 		.returning({ deletedUuid: receive_entry.uuid });
 
 	try {
@@ -130,7 +130,7 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
-		.where(eq(receive_entry.uuid, req.body.uuid))
+		.where(eq(receive_entry.uuid, req.params.uuid))
 		.orderBy(desc(receive_entry.created_at));
 	try {
 		const data = await receive_entryPromise;

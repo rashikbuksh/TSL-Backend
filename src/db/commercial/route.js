@@ -5,8 +5,8 @@ import * as lcOperations from './query/lc.js';
 const commercialRouter = Router();
 
 commercialRouter.post('/lc', lcOperations.insert);
-commercialRouter.post('/lc/:uuid', lcOperations.update);
-commercialRouter.post('/lc/:uuid', lcOperations.remove);
+commercialRouter.put('/lc/:uuid', lcOperations.update);
+commercialRouter.delete('/lc/:uuid', lcOperations.remove);
 commercialRouter.get('/lc', lcOperations.selectAll);
 commercialRouter.get('/lc/:uuid', lcOperations.select);
 

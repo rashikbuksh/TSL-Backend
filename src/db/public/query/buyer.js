@@ -62,7 +62,7 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const buyerPromise = db
-		.remove(buyer)
+		.delete(buyer)
 		.where(eq(buyer.uuid, req.params.uuid))
 		.returning({ removedName: buyer.name });
 

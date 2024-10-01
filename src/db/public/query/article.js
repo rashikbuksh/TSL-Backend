@@ -62,7 +62,7 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const articlePromise = db
-		.remove(article)
+		.delete(article)
 		.where(eq(article.uuid, req.params.uuid))
 		.returning({ removedName: article.name });
 

@@ -8,9 +8,7 @@ import {
 
 import * as hrSchema from '../hr/schema.js';
 
-const publicSchema = pgSchema('publicSchema');
-
-export const buyer = publicSchema.table('buyer', {
+export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
@@ -19,7 +17,7 @@ export const buyer = publicSchema.table('buyer', {
 	remarks: text('remarks').default(null),
 });
 
-export const article = publicSchema.table('article', {
+export const article = pgTable('article', {
 	uuid: uuid_primary,
 	buyer_uuid: defaultUUID('buyer_uuid').references(() => buyer.uuid),
 	name: text('name').notNull(),
@@ -29,7 +27,7 @@ export const article = publicSchema.table('article', {
 	remarks: text('remarks').default(null),
 });
 
-export const category = publicSchema.table('category', {
+export const category = pgTable('category', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
@@ -38,4 +36,4 @@ export const category = publicSchema.table('category', {
 	remarks: text('remarks').default(null),
 });
 
-export default publicSchema;
+export default category;

@@ -151,3 +151,35 @@ export async function select(req, res, next) {
 		});
 	}
 }
+
+export async function selectByReceiveUuid(req, res, next) {
+	const receive_entryPromise = db
+		.select({
+			uuid: receive_entry.uuid,
+			receive_uuid: receive_entry.receive_uuid,
+			material_uuid: receive_entry.material_uuid,
+			material_name: material.name,
+			quantity: receive_entry.quantity,
+			price: receive_entry.price,
+			created_by: receive_entry.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: receive_entry.created_at,
+			updated_at: receive_entry.updated_at,
+			remarks: receive_entry.remarks,
+		})
+		.from(receive_entry)
+		.leftJoin(
+			hrSchema.users,
+			eq(receive_entry.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.where(eq(receive_entry.receive_uuid, req.params.receive_uuid))
+		.orderBy(desc(receive_entry.created_at));
+	const toast = {
+		status: 200,
+		type: 'select all',
+		message: 'receive_entry list',
+	};
+
+	handleResponse({ promise: receive_entryPromise, res, next, ...toast });
+}

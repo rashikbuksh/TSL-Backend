@@ -402,6 +402,37 @@ const pathReceiveEntry = {
 			},
 		},
 	},
+	'/store/receive-entry/by/{receive_uuid}': {
+		get: {
+			tags: ['store.receive_entry'],
+			summary: 'Select ReceiveEntry by Receive UUID',
+			parameters: [
+				{
+					name: 'receive_uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/store/receive_entry',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 const pathReceive = {
@@ -529,6 +560,32 @@ const pathReceive = {
 				},
 			],
 			responses: { 200: { description: 'Successful operation' } },
+		},
+	},
+	'/store/receive-entry-details/by/{receive_uuid}': {
+		get: {
+			tags: ['store.receive'],
+			summary: 'Select Receive Entry Details',
+			parameters: [
+				{
+					name: 'receive_uuid',
+					in: 'path',
+					required: true,
+					schema: { type: 'string' },
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/receive_entry',
+							},
+						},
+					},
+				},
+			},
 		},
 	},
 };

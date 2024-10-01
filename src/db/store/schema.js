@@ -21,6 +21,8 @@ export const material = store.table('material', {
 		() => publicSchema.category.uuid
 	),
 	name: text('name').notNull(),
+	color: text('color').notNull(),
+	quantity: PG_DECIMAL('quantity').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

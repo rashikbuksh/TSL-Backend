@@ -6,8 +6,9 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as commercialSchema from '../../commercial/schema.js';
 
-import { receive } from '../schema.js';
+import { receive, vendor } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -88,7 +89,9 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: receive.uuid,
 			vendor_uuid: receive.vendor_uuid,
+			vendor_name: vendor.name,
 			lc_uuid: receive.lc_uuid,
+			lc_number: commercialSchema.lc.number,
 			is_import: receive.is_import,
 			commercial_invoice_number: receive.commercial_invoice_number,
 			commercial_invoice_value: receive.commercial_invoice_value,
@@ -101,6 +104,11 @@ export async function selectAll(req, res, next) {
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
+		.leftJoin(
+			commercialSchema.lc,
+			eq(receive.lc_uuid, commercialSchema.lc.uuid)
+		)
 		.orderBy(desc(receive.created_at));
 
 	const toast = {
@@ -119,7 +127,9 @@ export async function select(req, res, next) {
 		.select({
 			uuid: receive.uuid,
 			vendor_uuid: receive.vendor_uuid,
+			vendor_name: vendor.name,
 			lc_uuid: receive.lc_uuid,
+			lc_number: commercialSchema.lc.number,
 			is_import: receive.is_import,
 			commercial_invoice_number: receive.commercial_invoice_number,
 			commercial_invoice_value: receive.commercial_invoice_value,
@@ -132,6 +142,11 @@ export async function select(req, res, next) {
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
+		.leftJoin(
+			commercialSchema.lc,
+			eq(receive.lc_uuid, commercialSchema.lc.uuid)
+		)
 		.where(eq(receive.uuid, req.params.uuid));
 
 	try {

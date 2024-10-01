@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 
 import { material } from '../schema.js';
 
@@ -85,7 +86,9 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: material.uuid,
 			article_uuid: material.article_uuid,
+			article_name: publicSchema.article.name,
 			category_uuid: material.category_uuid,
+			category_name: publicSchema.category.name,
 			name: material.name,
 			created_by: material.created_by,
 			created_by_name: hrSchema.users.name,
@@ -95,6 +98,14 @@ export async function selectAll(req, res, next) {
 		})
 		.from(material)
 		.leftJoin(hrSchema.users, eq(material.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
 		.orderBy(desc(material.created_at));
 
 	const toast = {
@@ -116,7 +127,9 @@ export async function select(req, res, next) {
 		.select({
 			uuid: material.uuid,
 			article_uuid: material.article_uuid,
+			article_name: publicSchema.article.name,
 			category_uuid: material.category_uuid,
+			category_name: publicSchema.category.name,
 			name: material.name,
 			created_by: material.created_by,
 			created_by_name: hrSchema.users.name,
@@ -126,6 +139,14 @@ export async function select(req, res, next) {
 		})
 		.from(material)
 		.leftJoin(hrSchema.users, eq(material.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
 		.where(eq(material.uuid, req.params.uuid));
 
 	try {

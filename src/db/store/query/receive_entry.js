@@ -88,6 +88,7 @@ export async function selectAll(req, res, next) {
 			uuid: receive_entry.uuid,
 			receive_uuid: receive_entry.receive_uuid,
 			material_uuid: receive_entry.material_uuid,
+			material_name: material.name,
 			quantity: receive_entry.quantity,
 			price: receive_entry.price,
 			created_by: receive_entry.created_by,
@@ -101,6 +102,7 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
 		.orderBy(desc(receive_entry.created_at));
 	const toast = {
 		status: 200,
@@ -117,6 +119,7 @@ export async function select(req, res, next) {
 			uuid: receive_entry.uuid,
 			receive_uuid: receive_entry.receive_uuid,
 			material_uuid: receive_entry.material_uuid,
+			material_name: material.name,
 			quantity: receive_entry.quantity,
 			price: receive_entry.price,
 			created_by: receive_entry.created_by,
@@ -130,6 +133,7 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
 		.where(eq(receive_entry.uuid, req.params.uuid))
 		.orderBy(desc(receive_entry.created_at));
 	try {

@@ -15,7 +15,7 @@ export async function insert(req, res, next) {
 	const categoryPromise = db
 		.insert(category)
 		.values(req.body)
-		.returning({ insertedName: buyer.name });
+		.returning({ insertedName: category.name });
 
 	try {
 		const data = await categoryPromise;

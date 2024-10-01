@@ -8,7 +8,6 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { material } from '../schema.js';
-import { article, category } from '@/db/public/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

@@ -10,4 +10,4 @@ commercialRouter.post('/lc/:uuid', lcOperations.remove);
 commercialRouter.get('/lc', lcOperations.selectAll);
 commercialRouter.get('/lc/:uuid', lcOperations.select);
 
-export default commercialRouter;
+export { commercialRouter };

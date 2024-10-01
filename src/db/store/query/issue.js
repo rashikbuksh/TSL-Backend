@@ -8,7 +8,6 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { issue, material } from '../schema.js';
-import { uuid } from 'drizzle-orm/pg-core/index.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

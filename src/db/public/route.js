@@ -23,4 +23,4 @@ publicRouter.post('/category/:uuid', categoryOperations.remove);
 publicRouter.get('/category', categoryOperations.selectAll);
 publicRouter.get('/category/:uuid', categoryOperations.select);
 
-export default publicRouter;
+export { publicRouter };

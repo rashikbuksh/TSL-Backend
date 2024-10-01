@@ -38,4 +38,4 @@ storeRouter.post('/issue/:uuid', issueOperations.remove);
 storeRouter.get('/issue', issueOperations.selectAll);
 storeRouter.get('/issue/:uuid', issueOperations.select);
 
-export default storeRouter;
+export { storeRouter };

@@ -1,6 +1,9 @@
 import express from 'express';
 
 import { hrRouter } from '../db/hr/route.js';
+import { publicRouter } from '../db/public/route.js';
+import { storeRouter } from '../db/store/route.js';
+import { commercialRouter } from '../db/commercial/route.js';
 
 const route = express.Router();
 
@@ -17,5 +20,14 @@ const route = express.Router();
 
 // hr routes
 route.use('/hr', hrRouter);
+
+// public routes
+route.use('/public', publicRouter);
+
+// store routes
+route.use('/store', storeRouter);
+
+// commercial routes
+route.use('/commercial', commercialRouter);
 
 export default route;

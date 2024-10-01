@@ -19,6 +19,9 @@ otherRouter.get('/material/value/label', otherOperations.selectMaterial);
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
 // otherRouter.get('/receive/value/label', otherOperations.selectReceive);
 
+// commercial lc
+otherRouter.get('/lc/value/label', otherOperations.selectLc);
+
 //public buyer , category, article swagger route
 const pathPublic = {
 	'/other/buyer/value/label': {
@@ -303,10 +306,46 @@ const pathStore = {
 	// },
 };
 
+// commercial lc swagger route
+
+const pathCommercial = {
+	'/other/lc/value/label': {
+		get: {
+			operationId: 'selectLc',
+			tags: ['other'],
+			summary: 'Select Lc',
+			description: 'Select Lc',
+			responses: {
+				200: {
+					description: 'Returns a all lcs.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'lc 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
 export const pathOther = {
 	...pathPublic,
 	...pathHr,
 	...pathStore,
+	...pathCommercial,
 };
 
 export const tagOther = [

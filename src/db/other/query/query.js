@@ -11,6 +11,7 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as hrSchema from '../../hr/schema.js';
 import * as storeSchema from '../../store/schema.js';
+import * as commercialSchema from '../../commercial/schema.js';
 
 // public buyer , category, article
 export async function selectBuyer(req, res, next) {
@@ -180,3 +181,20 @@ export async function selectVendor(req, res, next) {
 // 	};
 // 	handleResponse({ promise: receivePromise, res, next, ...toast });
 // }
+
+export async function selectLc(req, res, next) {
+	const lcPromise = db
+		.select({
+			value: commercialSchema.lc.uuid,
+			label: commercialSchema.lc.number,
+		})
+		.from(commercialSchema.lc)
+		.orderBy(commercialSchema.lc.number);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: `LC selected`,
+	};
+	handleResponse({ promise: lcPromise, res, next, ...toast });
+}

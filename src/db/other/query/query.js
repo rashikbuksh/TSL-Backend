@@ -11,8 +11,7 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as hrSchema from '../../hr/schema.js';
 
-// public buyer
-
+// public buyer , category, article
 export async function selectBuyer(req, res, next) {
 	const buyerPromise = db
 		.select({
@@ -29,8 +28,6 @@ export async function selectBuyer(req, res, next) {
 	};
 	handleResponse({ promise: buyerPromise, res, next, ...toast });
 }
-
-//public category
 
 export async function selectCategory(req, res, next) {
 	const categoryPromise = db
@@ -49,8 +46,6 @@ export async function selectCategory(req, res, next) {
 	handleResponse({ promise: categoryPromise, res, next, ...toast });
 }
 
-//public article
-
 export async function selectArticle(req, res, next) {
 	const articlePromise = db
 		.select({
@@ -68,7 +63,7 @@ export async function selectArticle(req, res, next) {
 	handleResponse({ promise: articlePromise, res, next, ...toast });
 }
 
-// hr department
+// hr department, designation, user
 export async function selectDepartment(req, res, next) {
 	const departmentPromise = db
 		.select({
@@ -89,8 +84,6 @@ export async function selectDepartment(req, res, next) {
 		...toast,
 	});
 }
-
-// hr designation
 
 export async function selectDesignation(req, res, next) {
 	const designationPromise = db
@@ -113,8 +106,6 @@ export async function selectDesignation(req, res, next) {
 	});
 }
 
-// hr user
-
 export async function selectHrUser(req, res, next) {
 	const userPromise = db
 		.select({
@@ -135,3 +126,56 @@ export async function selectHrUser(req, res, next) {
 		...toast,
 	});
 }
+
+// store material, vendor, receive
+
+export async function selectMaterial(req, res, next) {
+	const materialPromise = db
+		.select({
+			value: publicSchema.material.uuid,
+			label: publicSchema.material.name,
+		})
+		.from(publicSchema.material)
+		.orderBy(publicSchema.material.name);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: `Material selected`,
+	};
+	handleResponse({ promise: materialPromise, res, next, ...toast });
+}
+
+export async function selectVendor(req, res, next) {
+	const vendorPromise = db
+		.select({
+			value: publicSchema.vendor.uuid,
+			label: publicSchema.vendor.name,
+		})
+		.from(publicSchema.vendor)
+		.orderBy(publicSchema.vendor.name);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: `Vendor selected`,
+	};
+	handleResponse({ promise: vendorPromise, res, next, ...toast });
+}
+
+// export async function selectReceive(req, res, next) {
+// 	const receivePromise = db
+// 		.select({
+// 			value: publicSchema.receive.uuid,
+// 			label: publicSchema.receive.name,
+// 		})
+// 		.from(publicSchema.receive)
+// 		.orderBy(publicSchema.receive.name);
+
+// 	const toast = {
+// 		status: 200,
+// 		type: 'select',
+// 		message: `Receive selected`,
+// 	};
+// 	handleResponse({ promise: receivePromise, res, next, ...toast });
+// }

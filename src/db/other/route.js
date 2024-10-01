@@ -4,19 +4,20 @@ import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();
 
-//public buyer
+//public buyer , category, article
 otherRouter.get('/buyer/value/label', otherOperations.selectBuyer);
-
-//public category
 otherRouter.get('/category/value/label', otherOperations.selectCategory);
-
-//public article
 otherRouter.get('/article/value/label', otherOperations.selectArticle);
 
 // hr user, department, designation
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
 otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
 otherRouter.get('/designation/value/label', otherOperations.selectDesignation);
+
+// store material, vendor, receive
+otherRouter.get('/material/value/label', otherOperations.selectMaterial);
+otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
+// otherRouter.get('/receive/value/label', otherOperations.selectReceive);
 
 //public buyer , category, article swagger route
 const pathPublic = {
@@ -207,9 +208,105 @@ const pathHr = {
 	},
 };
 
+// store material, vendor, receive swagger route
+
+const pathStore = {
+	'/other/material/value/label': {
+		get: {
+			operationId: 'selectMaterial',
+			tags: ['other'],
+			summary: 'Select Material',
+			description: 'Select Material',
+			responses: {
+				200: {
+					description: 'Returns a all materials.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'material 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/vendor/value/label': {
+		get: {
+			operationId: 'selectVendor',
+			tags: ['other'],
+			summary: 'Select Vendor',
+			description: 'Select Vendor',
+			responses: {
+				200: {
+					description: 'Returns a all vendors.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'vendor 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	// '/other/receive/value/label': {
+	// 	get: {
+	// 		operationId: 'selectReceive',
+	// 		tags: ['other'],
+	// 		summary: 'Select Receive',
+	// 		description: 'Select Receive',
+	// 		responses: {
+	// 			200: {
+	// 				description: 'Returns a all receives.',
+	// 				content: {
+	// 					'application/json': {
+	// 						schema: {
+	// 							type: 'object',
+	// 							properties: {
+	// 								value: {
+	// 									type: 'string',
+	// 									example: '2ggcphnwHGzEUGy',
+	// 								},
+	// 								label: {
+	// 									type: 'string',
+	// 									example: 'receive 1',
+	// 								},
+	// 							},
+	// 						},
+	// 					},
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// },
+};
+
 export const pathOther = {
 	...pathPublic,
 	...pathHr,
+	...pathStore,
 };
 
 export const tagOther = [

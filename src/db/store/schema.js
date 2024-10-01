@@ -6,9 +6,9 @@ import {
 	uuid_primary,
 } from '../variables.js';
 
+import * as commercialSchema from '../commercial/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
-import * as commercialSchema from '../commercial/schema.js';
 
 const store = pgSchema('store');
 

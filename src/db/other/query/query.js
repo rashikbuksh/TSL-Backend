@@ -10,6 +10,7 @@ import db from '../../index.js';
 
 import * as publicSchema from '../../public/schema.js';
 import * as hrSchema from '../../hr/schema.js';
+import * as storeSchema from '../../store/schema.js';
 
 // public buyer , category, article
 export async function selectBuyer(req, res, next) {
@@ -132,11 +133,11 @@ export async function selectHrUser(req, res, next) {
 export async function selectMaterial(req, res, next) {
 	const materialPromise = db
 		.select({
-			value: publicSchema.material.uuid,
-			label: publicSchema.material.name,
+			value: storeSchema.material.uuid,
+			label: storeSchema.material.name,
 		})
-		.from(publicSchema.material)
-		.orderBy(publicSchema.material.name);
+		.from(storeSchema.material)
+		.orderBy(storeSchema.material.name);
 
 	const toast = {
 		status: 200,
@@ -149,11 +150,11 @@ export async function selectMaterial(req, res, next) {
 export async function selectVendor(req, res, next) {
 	const vendorPromise = db
 		.select({
-			value: publicSchema.vendor.uuid,
-			label: publicSchema.vendor.name,
+			value: storeSchema.vendor.uuid,
+			label: storeSchema.vendor.name,
 		})
-		.from(publicSchema.vendor)
-		.orderBy(publicSchema.vendor.name);
+		.from(storeSchema.vendor)
+		.orderBy(storeSchema.vendor.name);
 
 	const toast = {
 		status: 200,
@@ -166,11 +167,11 @@ export async function selectVendor(req, res, next) {
 // export async function selectReceive(req, res, next) {
 // 	const receivePromise = db
 // 		.select({
-// 			value: publicSchema.receive.uuid,
-// 			label: publicSchema.receive.name,
+// 			value: storeSchema.receive.uuid,
+// 			label: storeSchema.receive.name,
 // 		})
-// 		.from(publicSchema.receive)
-// 		.orderBy(publicSchema.receive.name);
+// 		.from(storeSchema.receive)
+// 		.orderBy(storeSchema.receive.name);
 
 // 	const toast = {
 // 		status: 200,

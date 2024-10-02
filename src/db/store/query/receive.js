@@ -89,6 +89,7 @@ export async function selectAll(req, res, next) {
 	const receivePromise = db
 		.select({
 			uuid: receive.uuid,
+			id: receive.id,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			lc_uuid: receive.lc_uuid,
@@ -127,6 +128,7 @@ export async function select(req, res, next) {
 	const receivePromise = db
 		.select({
 			uuid: receive.uuid,
+			id: receive.id,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			lc_uuid: receive.lc_uuid,

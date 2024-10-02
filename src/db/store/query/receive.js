@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -90,6 +90,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: receive.uuid,
 			id: receive.id,
+			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			lc_uuid: receive.lc_uuid,
@@ -129,6 +130,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: receive.uuid,
 			id: receive.id,
+			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			lc_uuid: receive.lc_uuid,

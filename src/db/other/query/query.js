@@ -140,6 +140,7 @@ export async function selectMaterial(req, res, next) {
 		.select({
 			value: storeSchema.material.uuid,
 			label: storeSchema.material.name,
+			unit: storeSchema.material.unit,
 		})
 		.from(storeSchema.material)
 		.orderBy(storeSchema.material.name);

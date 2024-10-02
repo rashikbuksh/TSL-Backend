@@ -4,8 +4,9 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import hr, * as hrSchema from '../../hr/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 
 import { issue, material } from '../schema.js';
 
@@ -90,7 +91,10 @@ export async function selectAll(req, res, next) {
 			uuid: issue.uuid,
 			material_uuid: issue.material_uuid,
 			material_name: material.name,
-			quantity: issue.quantity,
+			article_name: publicSchema.article.name,
+			buyer_name: publicSchema.buyer.name,
+			category_name: publicSchema.category.name,
+			issue_quantity: issue.issue_quantity,
 			created_by: issue.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: issue.created_at,
@@ -100,6 +104,18 @@ export async function selectAll(req, res, next) {
 		.from(issue)
 		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
 		.leftJoin(material, eq(issue.material_uuid, material.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
 		.orderBy(desc(issue.created_at));
 
 	const toast = {
@@ -124,7 +140,10 @@ export async function select(req, res, next) {
 			uuid: issue.uuid,
 			material_uuid: issue.material_uuid,
 			material_name: material.name,
-			quantity: issue.quantity,
+			article_name: publicSchema.article.name,
+			buyer_name: publicSchema.buyer.name,
+			category_name: publicSchema.category.name,
+			issue_quantity: issue.issue_quantity,
 			created_by: issue.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: issue.created_at,
@@ -134,6 +153,18 @@ export async function select(req, res, next) {
 		.from(issue)
 		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
 		.leftJoin(material, eq(issue.material_uuid, material.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
 		.where(eq(issue.uuid, req.params.uuid));
 
 	try {

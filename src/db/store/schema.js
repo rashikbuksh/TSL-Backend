@@ -65,7 +65,7 @@ export const receive = store.table('receive', {
 export const issue = store.table('issue', {
 	uuid: uuid_primary,
 	material_uuid: defaultUUID('material_uuid').references(() => material.uuid),
-	quantity: PG_DECIMAL('quantity').notNull(),
+	issue_quantity: PG_DECIMAL('quantity').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

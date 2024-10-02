@@ -4,8 +4,10 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import hr, * as hrSchema from '../../hr/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+
+import * as publicSchema from '../../public/schema.js';
 
 import { material, receive_entry } from '../schema.js';
 
@@ -89,6 +91,9 @@ export async function selectAll(req, res, next) {
 			receive_uuid: receive_entry.receive_uuid,
 			material_uuid: receive_entry.material_uuid,
 			material_name: material.name,
+			article_name: publicSchema.article.name,
+			buyer_name: publicSchema.buyer.name,
+			category_name: publicSchema.category.name,
 			quantity: receive_entry.quantity,
 			price: receive_entry.price,
 			created_by: receive_entry.created_by,
@@ -103,6 +108,18 @@ export async function selectAll(req, res, next) {
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
 		.orderBy(desc(receive_entry.created_at));
 	const toast = {
 		status: 200,
@@ -120,6 +137,9 @@ export async function select(req, res, next) {
 			receive_uuid: receive_entry.receive_uuid,
 			material_uuid: receive_entry.material_uuid,
 			material_name: material.name,
+			article_name: publicSchema.article.name,
+			buyer_name: publicSchema.buyer.name,
+			category_name: publicSchema.category.name,
 			quantity: receive_entry.quantity,
 			price: receive_entry.price,
 			created_by: receive_entry.created_by,
@@ -134,6 +154,18 @@ export async function select(req, res, next) {
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
 		.where(eq(receive_entry.uuid, req.params.uuid))
 		.orderBy(desc(receive_entry.created_at));
 	try {
@@ -159,6 +191,9 @@ export async function selectByReceiveUuid(req, res, next) {
 			receive_uuid: receive_entry.receive_uuid,
 			material_uuid: receive_entry.material_uuid,
 			material_name: material.name,
+			article_name: publicSchema.article.name,
+			buyer_name: publicSchema.buyer.name,
+			category_name: publicSchema.category.name,
 			quantity: receive_entry.quantity,
 			price: receive_entry.price,
 			created_by: receive_entry.created_by,
@@ -173,6 +208,18 @@ export async function selectByReceiveUuid(req, res, next) {
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
 		.where(eq(receive_entry.receive_uuid, req.params.receive_uuid))
 		.orderBy(desc(receive_entry.created_at));
 	const toast = {

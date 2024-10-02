@@ -41,8 +41,14 @@ export const vendor = store.table('vendor', {
 	remarks: text('remarks').default(null),
 });
 
+export const store_receive_sequence = store.sequence('receive_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const receive = store.table('receive', {
 	uuid: uuid_primary,
+	id: integer('id').default(() => store_receive_sequence.nextval),
 	vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid),
 	lc_uuid: defaultUUID('lc_uuid').references(() => commercialSchema.lc.uuid),
 	is_import: integer('is_import').default(0),

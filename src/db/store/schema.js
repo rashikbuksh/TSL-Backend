@@ -23,6 +23,7 @@ export const material = store.table('material', {
 	name: text('name').notNull(),
 	color: text('color').notNull(),
 	quantity: PG_DECIMAL('quantity').notNull(),
+	unit: text('unit').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

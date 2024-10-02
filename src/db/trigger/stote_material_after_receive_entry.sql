@@ -22,10 +22,22 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION store_material_after_receive_entry_update_funct() RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE store.material
-     SET 
-        quantity = quantity - OLD.quantity + NEW.quantity 
-        WHERE uuid = OLD.material_uuid; 
+     IF OLD.material_uuid <> NEW.material_uuid THEN
+        -- Deduct the old quantity from the old material
+        UPDATE store.material
+        SET quantity = quantity - OLD.quantity
+        WHERE uuid = OLD.material_uuid;
+
+        -- Add the new quantity to the new material
+        UPDATE store.material
+        SET quantity = quantity + NEW.quantity
+        WHERE uuid = NEW.material_uuid;
+    ELSE
+        -- If the material UUID has not changed, just update the quantity
+        UPDATE store.material
+        SET quantity = quantity - OLD.quantity + NEW.quantity
+        WHERE uuid = OLD.material_uuid;
+    END IF;
     RETURN NEW;
 END;
 

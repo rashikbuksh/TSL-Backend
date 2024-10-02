@@ -52,9 +52,13 @@ export async function selectArticle(req, res, next) {
 	const articlePromise = db
 		.select({
 			value: publicSchema.article.uuid,
-			label: publicSchema.article.name,
+			label: sql`concat(${publicSchema.article.name}, '-', ${publicSchema.buyer.name})`,
 		})
 		.from(publicSchema.article)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
 		.orderBy(publicSchema.article.name);
 
 	const toast = {

@@ -7,7 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-
+import { decimalToNumber } from '../../variables.js';
 import { material } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -92,7 +92,7 @@ export async function selectAll(req, res, next) {
 			category_name: publicSchema.category.name,
 			name: material.name,
 			color: material.color,
-			quantity: material.quantity,
+			quantity: decimalToNumber(material.quantity),
 			unit: material.unit,
 			created_by: material.created_by,
 			created_by_name: hrSchema.users.name,
@@ -141,7 +141,7 @@ export async function select(req, res, next) {
 			category_name: publicSchema.category.name,
 			name: material.name,
 			color: material.color,
-			quantity: material.quantity,
+			quantity: decimalToNumber(material.quantity),
 			unit: material.unit,
 			created_by: material.created_by,
 			created_by_name: hrSchema.users.name,

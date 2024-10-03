@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-
+import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
 
 import { material, receive, receive_entry } from '../schema.js';
@@ -97,8 +97,8 @@ export async function selectAll(req, res, next) {
 								a.name AS article_name,
 								b.name AS buyer_name,
 								c.name AS category_name,
-								re.quantity,
-								re.price,
+								re.quantity::float8,
+								re.price::float8,
 								re.created_by,
 								u.name AS created_by_name,
 								re.created_at,
@@ -152,8 +152,8 @@ export async function select(req, res, next) {
 								a.name AS article_name,
 								b.name AS buyer_name,
 								c.name AS category_name,
-								re.quantity,
-								re.price,
+								re.quantity::float8,
+								re.price::float8,
 								re.created_by,
 								u.name AS created_by_name,
 								re.created_at,
@@ -205,8 +205,8 @@ export async function selectByReceiveUuid(req, res, next) {
 			article_name: publicSchema.article.name,
 			buyer_name: publicSchema.buyer.name,
 			category_name: publicSchema.category.name,
-			quantity: receive_entry.quantity,
-			price: receive_entry.price,
+			quantity: decimalToNumber(receive_entry.quantity),
+			price: decimalToNumber(receive_entry.price),
 			created_by: receive_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: receive_entry.created_at,

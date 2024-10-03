@@ -7,7 +7,7 @@ import {
 	timestamp,
 	uuid,
 } from 'drizzle-orm/pg-core';
-
+import { sql } from 'drizzle-orm';
 export const defaultUUID = (column = 'uuid') =>
 	text(column, {
 		length: 15,
@@ -26,3 +26,7 @@ export const PG_DECIMAL = (column) =>
 		precision: 20,
 		scale: 4,
 	}).notNull();
+
+export const decimalToNumber = (column) => {
+	return sql`${column}::float8`;
+};

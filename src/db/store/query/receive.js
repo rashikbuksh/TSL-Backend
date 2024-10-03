@@ -10,6 +10,7 @@ import db from '../../index.js';
 import * as commercialSchema from '../../commercial/schema.js';
 
 import { receive, vendor } from '../schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -97,8 +98,10 @@ export async function selectAll(req, res, next) {
 			lc_number: commercialSchema.lc.number,
 			is_import: receive.is_import,
 			commercial_invoice_number: receive.commercial_invoice_number,
-			commercial_invoice_value: receive.commercial_invoice_value,
-			convention_rate: receive.convention_rate,
+			commercial_invoice_value: decimalToNumber(
+				receive.commercial_invoice_value
+			),
+			convention_rate: decimalToNumber(receive.convention_rate),
 			created_by: receive.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: receive.created_at,
@@ -137,8 +140,8 @@ export async function select(req, res, next) {
 			lc_number: commercialSchema.lc.number,
 			is_import: receive.is_import,
 			commercial_invoice_number: receive.commercial_invoice_number,
-			commercial_invoice_value: receive.commercial_invoice_value,
-			convention_rate: receive.convention_rate,
+			commercial_invoice_value: decimalToNumber(receive.commercial_invoice_value),
+			convention_rate: decimalToNumber(receive.convention_rate),
 			created_by: receive.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: receive.created_at,

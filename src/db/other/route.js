@@ -21,6 +21,7 @@ otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
 
 // commercial lc
 otherRouter.get('/lc/value/label', otherOperations.selectLc);
+otherRouter.get('/master-lc/value/label', otherOperations.selectMasterLc);
 
 //public buyer , category, article swagger route
 const pathPublic = {
@@ -330,6 +331,36 @@ const pathCommercial = {
 									label: {
 										type: 'string',
 										example: 'lc 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/master-lc/value/label': {
+		get: {
+			operationId: 'selectMasterLc',
+			tags: ['other'],
+			summary: 'Select MasterLc',
+			description: 'Select MasterLc',
+			responses: {
+				200: {
+					description: 'Returns a all master lcs.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'master lc 1',
 									},
 								},
 							},

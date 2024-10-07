@@ -11,10 +11,10 @@ commercialRouter.delete('/lc/:uuid', lcOperations.remove);
 commercialRouter.get('/lc', lcOperations.selectAll);
 commercialRouter.get('/lc/:uuid', lcOperations.select);
 
-commercialRouter.post('/master_lc', masterLcOperations.insert);
-commercialRouter.put('/master_lc/:uuid', masterLcOperations.update);
-commercialRouter.delete('/master_lc/:uuid', masterLcOperations.remove);
-commercialRouter.get('/master_lc', masterLcOperations.selectAll);
-commercialRouter.get('/master_lc/:uuid', masterLcOperations.select);
+commercialRouter.post('/master-lc', masterLcOperations.insert);
+commercialRouter.put('/master-lc/:uuid', masterLcOperations.update);
+commercialRouter.delete('/master-lc/:uuid', masterLcOperations.remove);
+commercialRouter.get('/master-lc', masterLcOperations.selectAll);
+commercialRouter.get('/master-lc/:uuid', masterLcOperations.select);
 
 export { commercialRouter };

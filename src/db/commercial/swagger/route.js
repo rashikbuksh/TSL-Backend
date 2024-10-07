@@ -138,7 +138,7 @@ const pathLc = {
 };
 
 const pathMasterLc = {
-	'/commercial/master_lc': {
+	'/commercial/master-lc': {
 		get: {
 			tags: ['commercial.master_lc'],
 			summary: 'Select all MasterLc',
@@ -186,7 +186,7 @@ const pathMasterLc = {
 		},
 	},
 
-	'/commercial/master_lc/{uuid}': {
+	'/commercial/master-lc/{uuid}': {
 		get: {
 			tags: ['commercial.master_lc'],
 			summary: 'Select MasterLc',

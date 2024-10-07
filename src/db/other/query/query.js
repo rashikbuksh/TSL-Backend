@@ -203,3 +203,20 @@ export async function selectLc(req, res, next) {
 	};
 	handleResponse({ promise: lcPromise, res, next, ...toast });
 }
+
+export async function selectMasterLc(req, res, next) {
+	const masterLcPromise = db
+		.select({
+			value: commercialSchema.master_lc.uuid,
+			label: commercialSchema.master_lc.number,
+		})
+		.from(commercialSchema.master_lc)
+		.orderBy(commercialSchema.master_lc.number);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: `Master LC selected`,
+	};
+	handleResponse({ promise: masterLcPromise, res, next, ...toast });
+}

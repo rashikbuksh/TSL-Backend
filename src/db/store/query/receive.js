@@ -1,4 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
 	handleResponse,
@@ -11,6 +12,8 @@ import * as commercialSchema from '../../commercial/schema.js';
 
 import { receive, vendor } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
+
+const lcProperties = alias(vendor, 'lcProperties');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -93,7 +96,7 @@ export async function selectAll(req, res, next) {
 			id: receive.id,
 			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
-			vendor_name: vendor.name,
+			vendor_name: receive.vendor_uuid ? vendor.name : lcProperties.name,
 			lc_uuid: receive.lc_uuid,
 			lc_number: commercialSchema.lc.number,
 			is_import: receive.is_import,
@@ -115,6 +118,10 @@ export async function selectAll(req, res, next) {
 			commercialSchema.lc,
 			eq(receive.lc_uuid, commercialSchema.lc.uuid)
 		)
+		.leftJoin(
+			lcProperties,
+			eq(commercialSchema.lc.vendor_uuid, lcProperties.uuid)
+		)
 		.orderBy(desc(receive.created_at));
 
 	const toast = {
@@ -135,12 +142,14 @@ export async function select(req, res, next) {
 			id: receive.id,
 			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
-			vendor_name: vendor.name,
+			vendor_name: receive.vendor_uuid ? vendor.name : lcProperties.name,
 			lc_uuid: receive.lc_uuid,
 			lc_number: commercialSchema.lc.number,
 			is_import: receive.is_import,
 			commercial_invoice_number: receive.commercial_invoice_number,
-			commercial_invoice_value: decimalToNumber(receive.commercial_invoice_value),
+			commercial_invoice_value: decimalToNumber(
+				receive.commercial_invoice_value
+			),
 			convention_rate: decimalToNumber(receive.convention_rate),
 			created_by: receive.created_by,
 			created_by_name: hrSchema.users.name,
@@ -154,6 +163,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			commercialSchema.lc,
 			eq(receive.lc_uuid, commercialSchema.lc.uuid)
+		)
+		.leftJoin(
+			lcProperties,
+			eq(commercialSchema.lc.vendor_uuid, lcProperties.uuid)
 		)
 		.where(eq(receive.uuid, req.params.uuid));
 

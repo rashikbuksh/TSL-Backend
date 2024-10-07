@@ -7,7 +7,8 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { lc } from '../schema.js';
+import { lc, master_lc } from '../schema.js';
+import * as storeSchema from '../../store/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -88,6 +89,13 @@ export async function selectAll(req, res, next) {
 			uuid: lc.uuid,
 			number: lc.number,
 			date: lc.date,
+			master_lc_uuid: lc.master_lc_uuid,
+			master_ld_number: master_lc.number,
+			vendor_uuid: lc.vendor_uuid,
+			vendor_name: storeSchema.vendor.name,
+			value: decimalToNumber(lc.value),
+			unit: lc.unit,
+			lien_bank: lc.lien_bank,
 			created_by: lc.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: lc.created_at,
@@ -96,6 +104,11 @@ export async function selectAll(req, res, next) {
 		})
 		.from(lc)
 		.leftJoin(hrSchema.users, eq(lc.created_by, hrSchema.users.uuid))
+		.leftJoin(master_lc, eq(lc.master_lc_uuid, master_lc.uuid))
+		.leftJoin(
+			storeSchema.vendor,
+			eq(lc.vendor_uuid, storeSchema.vendor.uuid)
+		)
 		.orderBy(desc(lc.created_at));
 
 	const toast = {
@@ -115,6 +128,13 @@ export async function select(req, res, next) {
 			uuid: lc.uuid,
 			number: lc.number,
 			date: lc.date,
+			master_lc_uuid: lc.master_lc_uuid,
+			master_lc_number: master_lc.number,
+			vendor_uuid: lc.vendor_uuid,
+			vendor_name: storeSchema.vendor.name,
+			value: decimalToNumber(lc.value),
+			unit: lc.unit,
+			lien_bank: lc.lien_bank,
 			created_by: lc.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: lc.created_at,
@@ -123,6 +143,11 @@ export async function select(req, res, next) {
 		})
 		.from(lc)
 		.leftJoin(hrSchema.users, eq(lc.created_by, hrSchema.users.uuid))
+		.leftJoin(master_lc, eq(lc.master_lc_uuid, master_lc.uuid))
+		.leftJoin(
+			storeSchema.vendor,
+			eq(lc.vendor_uuid, storeSchema.vendor.uuid)
+		)
 		.where(eq(lc.uuid, req.params.uuid));
 
 	try {

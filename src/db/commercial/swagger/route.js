@@ -137,6 +137,142 @@ const pathLc = {
 	},
 };
 
+const pathMasterLc = {
+	'/commercial/master_lc': {
+		get: {
+			tags: ['commercial.master_lc'],
+			summary: 'Select all MasterLc',
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/commercial/MasterLc',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['commercial.master_lc'],
+			summary: 'Insert MasterLc',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/MasterLc',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/MasterLc',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	'/commercial/master_lc/{uuid}': {
+		get: {
+			tags: ['commercial.master_lc'],
+			summary: 'Select MasterLc',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/MasterLc',
+							},
+						},
+					},
+				},
+			},
+		},
+
+		put: {
+			tags: ['commercial.master_lc'],
+			summary: 'Update MasterLc',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/MasterLc',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/MasterLc',
+							},
+						},
+					},
+				},
+			},
+		},
+
+		delete: {
+			tags: ['commercial.master_lc'],
+			summary: 'Delete MasterLc',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+				},
+			},
+		},
+	},
+};
+
 export const pathCommercial = {
 	...pathLc,
+	...pathMasterLc,
 };

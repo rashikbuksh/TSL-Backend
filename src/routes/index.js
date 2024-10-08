@@ -5,6 +5,7 @@ import { publicRouter } from '../db/public/route.js';
 import { storeRouter } from '../db/store/route.js';
 import { commercialRouter } from '../db/commercial/route.js';
 import { otherRouter } from '../db/other/route.js';
+import { reportRouter } from '../db/report/route.js';
 
 const route = express.Router();
 
@@ -33,5 +34,8 @@ route.use('/commercial', commercialRouter);
 
 // others routes
 route.use('/other', otherRouter);
+
+//report routes
+route.use('/report', reportRouter);
 
 export default route;

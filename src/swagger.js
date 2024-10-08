@@ -17,12 +17,16 @@ import { pathPublic } from './db/public/swagger/route.js';
 // Others
 import { pathOther, tagOther } from './db/other/route.js';
 
+//report
+import { pathReport, tagReport } from './db/report/route.js';
+
 const tags = [
 	...tagHr,
 	...tagCommercial,
 	...tagStore,
 	...tagPublic,
 	...tagOther,
+	...tagReport,
 ];
 
 const definitions = {
@@ -38,6 +42,7 @@ const paths = {
 	...pathStore,
 	...pathPublic,
 	...pathOther,
+	...pathReport,
 };
 
 const swaggerSpec = swaggerJSDoc({

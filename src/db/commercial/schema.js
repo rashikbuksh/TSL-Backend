@@ -36,6 +36,8 @@ export const master_lc = commercial.table('master_lc', {
 	uuid: uuid_primary,
 	number: text('number').notNull(),
 	date: DateTime('date').notNull(),
+	value: PG_DECIMAL('value').default(0),
+	lien_bank: text('lien_bank').default(null),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.notNull(),

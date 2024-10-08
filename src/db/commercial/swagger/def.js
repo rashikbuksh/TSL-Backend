@@ -27,6 +27,8 @@ export const defMasterLc = SED({
 		uuid: SE.uuid(),
 		number: SE.string('LC-001'),
 		date: SE.date_time(),
+		value: SE.number(),
+		lien_bank: SE.string('lien_bank'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

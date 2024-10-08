@@ -58,28 +58,28 @@ BEGIN
             i.material_uuid
     )
     SELECT 
-        m.uuid AS material_uuid,  -- Cast to uuid
+        m.uuid AS material_uuid,
         m.name AS material_name,
         -- opening
-        coalesce(op.op_quantity, 0) AS opening_quantity,
-        coalesce(op.op_quantity_total_price, 0) as opening_quantity_total_price,
-        coalesce(op.op_quantity_total_price / coalesce(op.op_quantity, 0), 0) as opening_quantity_rate,
+        ROUND(coalesce(op.op_quantity, 0), 4)::float8 AS opening_quantity,
+        ROUND(coalesce(op.op_quantity_total_price, 0), 4)::float8 AS opening_quantity_total_price,
+        ROUND(coalesce(op.op_quantity_total_price / NULLIF(op.op_quantity, 0), 0), 4)::float8 AS opening_quantity_rate,
         -- purchase
-        coalesce(cp.cp_quantity, 0) AS purchased_quantity,
-        coalesce(cp.cp_quantity_total_price, 0) AS purchased_quantity_total_price,
-        coalesce(cp.cp_quantity_total_price / coalesce(cp.cp_quantity, 0), 0) AS purchased_quantity_rate,
+        ROUND(coalesce(cp.cp_quantity, 0), 4)::float8 AS purchased_quantity,
+        ROUND(coalesce(cp.cp_quantity_total_price, 0), 4)::float8 AS purchased_quantity_total_price,
+        ROUND(coalesce(cp.cp_quantity_total_price / NULLIF(cp.cp_quantity, 0), 0), 4)::float8 AS purchased_quantity_rate,
         -- sub total
-        coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0) AS sub_total_quantity,
-        coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0) AS sub_total_quantity_total_price,
-        coalesce((coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / coalesce((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0) AS sub_total_quantity_rate,
+        ROUND(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 4)::float8 AS sub_total_quantity,
+        ROUND(coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0), 4)::float8 AS sub_total_quantity_total_price,
+        ROUND(coalesce((coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0), 4)::float8 AS sub_total_quantity_rate,
         -- consumption
-        coalesce(cc.cc_quantity, 0) AS consumption_quantity,
-        coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / coalesce((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0) AS consumption_quantity_total_price,
-        coalesce((cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / coalesce((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0)) / coalesce(cc.cc_quantity, 0), 0) AS consumption_quantity_rate,
+        ROUND(coalesce(cc.cc_quantity, 0), 4)::float8 AS consumption_quantity,
+        ROUND(coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0), 4)::float8 AS consumption_quantity_total_price,
+        ROUND(coalesce((cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0)) / NULLIF(cc.cc_quantity, 0), 0), 4)::float8 AS consumption_quantity_rate,
         -- closing
-        (coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)) - coalesce(cc.cc_quantity, 0) AS closing_quantity,
-        (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) - coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / coalesce((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0) AS closing_quantity_total_price,
-        coalesce(((coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) - coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / coalesce((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0)) / coalesce(((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)) - coalesce(cc.cc_quantity, 0)), 0), 0) AS closing_quantity_rate
+        ROUND((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)) - coalesce(cc.cc_quantity, 0), 4)::float8 AS closing_quantity,
+        ROUND((coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) - coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0), 4)::float8 AS closing_quantity_total_price,
+        ROUND(coalesce(((coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) - coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)), 0), 0)) / NULLIF(((coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0)) - coalesce(cc.cc_quantity, 0)), 0), 0), 4)::float8 AS closing_quantity_rate
     FROM
         store.material m
         LEFT JOIN opening op ON m.uuid = op.material_uuid

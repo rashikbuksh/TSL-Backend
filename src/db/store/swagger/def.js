@@ -89,17 +89,11 @@ export const defReceive = SED({
 //* ./schema.js#issue
 
 export const defIssue = SED({
-	required: [
-		'uuid',
-		'material_uuid',
-		'issue_quantity',
-		'created_by',
-		'created_at',
-	],
+	required: ['uuid', 'material_uuid', 'quantity', 'created_by', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
 		material_uuid: SE.uuid(),
-		issue_quantity: SE.number(10),
+		quantity: SE.number(10),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

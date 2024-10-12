@@ -6,10 +6,10 @@ import {
 	uuid_primary,
 } from '../variables.js';
 
+import { sql } from 'drizzle-orm';
 import * as commercialSchema from '../commercial/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
-import { sql } from 'drizzle-orm';
 
 const store = pgSchema('store');
 
@@ -63,7 +63,9 @@ export const receive = store.table('receive', {
 	commercial_invoice_number: text('commercial_invoice_number').notNull(),
 	commercial_invoice_value: PG_DECIMAL('commercial_invoice_value').default(0),
 	convention_rate: PG_DECIMAL('convention_rate').notNull(),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid).notNull(),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

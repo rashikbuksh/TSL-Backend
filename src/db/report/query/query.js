@@ -67,7 +67,7 @@ export async function storeVendorWiseMaterialReport(req, res, next) {
 					WHERE 
 						re.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 					GROUP BY
-						re.material_uuid, r.vendor_uuid
+						re.material_uuid, r.vendor_uuid, r.lc_uuid
 				) material_quantity_total ON vendor.uuid = material_quantity_total.vendor_uuid
 				LEFT JOIN 
 					store.material m ON material_quantity_total.material_uuid = m.uuid

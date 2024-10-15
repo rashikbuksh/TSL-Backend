@@ -47,7 +47,7 @@ export async function storeVendorWiseMaterialReport(req, res, next) {
 					material_quantity_total.price_bdt::float8,
 					avg.avg_convention_rates::float8,
 					ROUND(material_quantity_total.price_bdt::numeric / material_quantity_total.total_quantity::numeric, 4)::float8 as avg_price_per_unit_bdt,
-					ROUND(material_quantity_total.price_bdt::numeric / avg.avg_convention_rates::numeric, 4) as price_usd,
+					ROUND(material_quantity_total.price_bdt::numeric / avg.avg_convention_rates::numeric, 4)::float8 as price_usd,
 					(ROUND(material_quantity_total.price_bdt::numeric / material_quantity_total.total_quantity::numeric, 4) / avg.avg_convention_rates)::float8 as avg_price_per_unit_usd,
 					lc.number as lc_number,
 					lc.created_at as lc_created_at,

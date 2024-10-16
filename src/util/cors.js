@@ -1,6 +1,9 @@
 import cors from 'cors';
 
 const whitelist = [
+	// * VPS
+	'https://tsl.fortunezip.com',
+	'https://tslbackend.fortunezip.com',
 	//* FZL H/O
 	'http://103.147.163.46:3005',
 	'http://103.147.163.46:4010',

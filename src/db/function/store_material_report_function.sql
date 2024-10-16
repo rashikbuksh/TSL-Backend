@@ -20,7 +20,8 @@ RETURNS TABLE (
     consumption_quantity_rate float,
     closing_quantity float,
     closing_quantity_total_price float,
-    closing_quantity_rate float
+    closing_quantity_rate float,
+    avg_convention_rates float
 )
 LANGUAGE plpgsql
 AS $$
@@ -30,8 +31,9 @@ BEGIN
         SELECT
             re.material_uuid,
             ROUND(SUM(coalesce(re.quantity, 0)), 4)::float8 AS op_quantity,
-            ROUND(SUM(coalesce(re.price, 0)), 4)::float8 AS op_quantity_total_price
+            ROUND(SUM(coalesce(re.price, 0) * r.convention_rate), 4)::float8 AS op_quantity_total_price -- converted to bdt
         FROM store.receive_entry re
+        LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
         WHERE
             re.created_at IS NOT NULL
             AND re.created_at < start_date::TIMESTAMP
@@ -72,6 +74,18 @@ BEGIN
         GROUP BY
             i.material_uuid
     ),
+    material_convention_rate_usd AS (
+        SELECT
+            ROUND(SUM(r.convention_rate) / COUNT(r.convention_rate), 4)::float8 AS avg_convention_rates,
+            re.material_uuid
+        FROM store.receive r
+        LEFT JOIN store.receive_entry re ON r.uuid = re.receive_uuid
+        WHERE
+            re.created_at IS NOT NULL
+            AND re.created_at < end_date::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND r.convention_rate > 1
+        GROUP BY
+            re.material_uuid
+    ),
     sub_totals AS (
         SELECT
             m.uuid AS material_uuid,
@@ -89,13 +103,15 @@ BEGIN
             coalesce(cp.cp_quantity_total_price, 0) + coalesce(coalesce(op.op_quantity_total_price, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) * 
             coalesce(coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity),0) AS sub_total_quantity_total_price,
             coalesce(cc.cc_quantity, 0) AS consumption_quantity,
-            coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 0), 0) AS consumption_quantity_total_price
+            coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 0), 0) AS consumption_quantity_total_price,
+            coalesce(mcr.avg_convention_rates,0) AS avg_convention_rates
         FROM
             store.material m
             LEFT JOIN opening op ON m.uuid = op.material_uuid
             LEFT JOIN purchase cp ON m.uuid = cp.material_uuid
             LEFT JOIN consumption cc ON m.uuid = cc.material_uuid
             LEFT JOIN opening_consumption oc ON m.uuid = oc.material_uuid
+            LEFT JOIN material_convention_rate_usd mcr ON m.uuid = mcr.material_uuid
             LEFT JOIN public.article pa ON m.article_uuid = pa.uuid
             LEFT JOIN public.category ca ON m.category_uuid = ca.uuid
             LEFT JOIN public.buyer ba ON pa.buyer_uuid = ba.uuid
@@ -115,16 +131,17 @@ BEGIN
         coalesce(sub_totals.purchased_quantity_total_price / NULLIF(sub_totals.purchased_quantity, 0),0) AS purchased_quantity_rate,
         sub_totals.sub_total_quantity AS sub_total_quantity,
         sub_totals.sub_total_quantity_total_price AS sub_total_quantity_total_price,
-        sub_totals.sub_total_quantity_total_price / NULLIF(sub_totals.sub_total_quantity, 0) AS sub_total_quantity_rate,
+        coalesce(sub_totals.sub_total_quantity_total_price / NULLIF(sub_totals.sub_total_quantity, 0),0) AS sub_total_quantity_rate,
         sub_totals.consumption_quantity AS consumption_quantity,
         sub_totals.consumption_quantity_total_price AS consumption_quantity_total_price,
         coalesce(sub_totals.consumption_quantity_total_price / NULLIF(sub_totals.consumption_quantity, 0),0) AS consumption_quantity_rate,
         sub_totals.sub_total_quantity - sub_totals.consumption_quantity AS closing_quantity,
         sub_totals.sub_total_quantity_total_price - sub_totals.consumption_quantity_total_price AS closing_quantity_total_price,
-        coalesce((sub_totals.sub_total_quantity_total_price - sub_totals.consumption_quantity_total_price) / NULLIF(sub_totals.sub_total_quantity - sub_totals.consumption_quantity, 0),0) AS closing_quantity_rate
+        coalesce((sub_totals.sub_total_quantity_total_price - sub_totals.consumption_quantity_total_price) / NULLIF(sub_totals.sub_total_quantity - sub_totals.consumption_quantity, 0),0) AS closing_quantity_rate,
+        sub_totals.avg_convention_rates
     FROM
         sub_totals
     ORDER BY
-        material_uuid;
+        sub_totals.material_uuid;
 END;
 $$;

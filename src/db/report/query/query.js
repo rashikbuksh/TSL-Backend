@@ -41,9 +41,9 @@ export async function storeVendorWiseMaterialReport(req, res, next) {
                 SELECT 
 				   	vendor.uuid as vendor_uuid,
 					vendor.name as vendor_name,
-					material_quantity_total.total_quantity::float8,
-					material_quantity_total.price_bdt::float8,
-					material_quantity_total.avg_convention_rate::float8
+					coalesce(material_quantity_total.total_quantity,0)::float8,
+					coalesce(material_quantity_total.price_bdt,0)::float8,
+					coalesce(material_quantity_total.avg_convention_rate,0)::float8
 				FROM
 					store.vendor
 				LEFT JOIN (

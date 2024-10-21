@@ -41,8 +41,8 @@ export async function storeVendorWiseMaterialReport(req, res, next) {
                 SELECT 
 				   	vendor.uuid as vendor_uuid,
 					vendor.name as vendor_name,
-					SUM(re.quantity * re.price) as total_price_usd,
-					SUM(re.quantity * re.price * r.convention_rate) as total_price_bdt
+					SUM(re.quantity * re.price)::float8 as total_price_usd,
+					SUM(re.quantity * re.price * r.convention_rate)::float8 as total_price_bdt
 				FROM
 					store.receive_entry re
 				LEFT JOIN store.receive r ON re.receive_uuid = r.uuid

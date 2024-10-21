@@ -35,7 +35,7 @@ export const material = store.table('material', {
 
 export const vendor = store.table('vendor', {
 	uuid: uuid_primary,
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	person: text('person').notNull(),
 	phone: text('phone').notNull(),
 	address: text('address').notNull(),

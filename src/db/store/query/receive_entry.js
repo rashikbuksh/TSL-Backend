@@ -6,10 +6,10 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 
-import { material, receive, receive_entry } from '../schema.js';
+import { material, receive, receive_entry, vendor } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -90,6 +90,8 @@ export async function selectAll(req, res, next) {
 						SELECT
 								re.uuid,
 								re.receive_uuid,
+								v.uuid as vendor_uuid,
+								v.name as vendor_name,
 								concat('R', to_char(r.created_at, 'YY'), '-', LPAD(r.id::text, 4, '0')) AS receive_id,
 								re.material_uuid,
 								m.name AS material_name,
@@ -119,6 +121,8 @@ export async function selectAll(req, res, next) {
 								public.category c ON c.uuid = m.category_uuid
 							LEFT JOIN 
 								hr.users u ON u.uuid = re.created_by
+							LEFT JOIN
+								store.vendor v ON v.uuid = r.vendor_uuid
 							ORDER BY
 								re.created_at DESC`;
 
@@ -146,6 +150,8 @@ export async function select(req, res, next) {
 						SELECT
 								re.uuid,
 								re.receive_uuid,
+								v.uuid as vendor_uuid,
+								v.name as vendor_name,
 								concat('R', to_char(r.created_at, 'YY'), '-', LPAD(r.id::text, 4, '0')) AS receive_id,
 								re.material_uuid,
 								m.name AS material_name,
@@ -175,6 +181,8 @@ export async function select(req, res, next) {
 								public.category c ON c.uuid = m.category_uuid
 							LEFT JOIN 
 								hr.users u ON u.uuid = re.created_by
+							LEFT JOIN
+								store.vendor v ON v.uuid = r.vendor_uuid
 							WHERE
 								re.uuid = ${req.params.uuid}`;
 
@@ -201,6 +209,8 @@ export async function selectByReceiveUuid(req, res, next) {
 		.select({
 			uuid: receive_entry.uuid,
 			receive_uuid: receive_entry.receive_uuid,
+			vendor_uuid: receive.vendor_uuid,
+			vendor_name: vendor.name,
 			material_uuid: receive_entry.material_uuid,
 			material_name: material.name,
 			material_unit: material.unit,
@@ -233,6 +243,7 @@ export async function selectByReceiveUuid(req, res, next) {
 			publicSchema.category,
 			eq(material.category_uuid, publicSchema.category.uuid)
 		)
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
 		.where(eq(receive_entry.receive_uuid, req.params.receive_uuid))
 		.orderBy(desc(receive_entry.created_at));
 	const toast = {

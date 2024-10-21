@@ -50,6 +50,8 @@ export async function storeVendorWiseMaterialReport(req, res, next) {
 				WHERE re.created_at between ${start_date}::TIMESTAMP and ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 				GROUP BY
 					vendor.uuid
+				ORDER BY
+					vendor.name
             `;
 
 	const resultPromise = db.execute(query);

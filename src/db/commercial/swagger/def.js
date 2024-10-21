@@ -29,6 +29,7 @@ export const defMasterLc = SED({
 		date: SE.date_time(),
 		value: SE.number(),
 		lien_bank: SE.string('lien_bank'),
+		payment_terms: SE.integer(),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

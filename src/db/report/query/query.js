@@ -41,25 +41,15 @@ export async function storeVendorWiseMaterialReport(req, res, next) {
                 SELECT 
 				   	vendor.uuid as vendor_uuid,
 					vendor.name as vendor_name,
-					coalesce(material_quantity_total.total_quantity,0)::float8 as total_quantity,
-					coalesce(material_quantity_total.price_bdt,0)::float8 as price_bdt,
-					coalesce(material_quantity_total.avg_convention_rate,0)::float8 as avg_convention_rate
+					SUM(re.quantity * re.price) as total_price_usd,
+					SUM(re.quantity * re.price * r.convention_rate) as total_price_bdt
 				FROM
-					store.vendor
-				LEFT JOIN (
-					SELECT 
-						r.vendor_uuid,
-						SUM(re.quantity) as total_quantity,
-						SUM(re.price * r.convention_rate) as price_bdt,
-						SUM(CASE WHEN r.convention_rate > 1 THEN r.convention_rate END ) / COUNT (CASE WHEN r.convention_rate > 1 THEN r.convention_rate END) as avg_convention_rate
-					FROM
-						store.receive_entry re
-						LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
-					WHERE 
-						re.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-					GROUP BY
-						r.vendor_uuid
-				) material_quantity_total ON vendor.uuid = material_quantity_total.vendor_uuid
+					store.receive_entry re
+				LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
+				LEFT JOIN store.vendor vendor ON r.vendor_uuid = vendor.uuid
+				WHERE re.created_at between ${start_date}::TIMESTAMP and ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+				GROUP BY
+					vendor.uuid
             `;
 
 	const resultPromise = db.execute(query);

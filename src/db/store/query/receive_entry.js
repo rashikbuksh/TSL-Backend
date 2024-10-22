@@ -226,6 +226,7 @@ export async function selectByReceiveUuid(req, res, next) {
 			remarks: receive_entry.remarks,
 		})
 		.from(receive_entry)
+		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(receive_entry.created_by, hrSchema.users.uuid)

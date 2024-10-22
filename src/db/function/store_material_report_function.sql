@@ -7,21 +7,30 @@ RETURNS TABLE (
     category_name text,
     buyer_name text,
     opening_quantity float,
-    opening_quantity_total_price float,
-    opening_quantity_rate float,
+    opening_quantity_total_price_usd float,
+    opening_quantity_total_price_bdt float,
+    opening_quantity_rate_usd float,
+    opening_quantity_rate_bdt float,
     purchased_quantity float,
-    purchased_quantity_total_price float,
-    purchased_quantity_rate float,
+    purchased_quantity_total_price_usd float,
+    purchased_quantity_total_price_bdt float,
+    purchased_quantity_rate_usd float,
+    purchased_quantity_rate_bdt float,
     sub_total_quantity float,
-    sub_total_quantity_total_price float,
-    sub_total_quantity_rate float,
+    sub_total_quantity_total_price_usd float,
+    sub_total_quantity_total_price_bdt float,
+    sub_total_quantity_rate_usd float,
+    sub_total_quantity_rate_bdt float,
     consumption_quantity float,
-    consumption_quantity_total_price float,
-    consumption_quantity_rate float,
+    consumption_quantity_total_price_usd float,
+    consumption_quantity_total_price_bdt float,
+    consumption_quantity_rate_usd float,
+    consumption_quantity_rate_bdt float,
     closing_quantity float,
-    closing_quantity_total_price float,
-    closing_quantity_rate float,
-    avg_convention_rates float
+    closing_quantity_total_price_usd float,
+    closing_quantity_total_price_bdt float,
+    closing_quantity_rate_usd float,
+    closing_quantity_rate_bdt float
 )
 LANGUAGE plpgsql
 AS $$
@@ -31,7 +40,8 @@ BEGIN
         SELECT
             re.material_uuid,
             ROUND(SUM(coalesce(re.quantity, 0)), 4)::float8 AS op_quantity,
-            ROUND(SUM(coalesce(re.price, 0) * r.convention_rate), 4)::float8 AS op_quantity_total_price -- converted to bdt
+            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0)), 4)::float8 AS op_quantity_total_price_usd,
+            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0) * r.convention_rate), 4)::float8 as op_quantity_total_price_bdt
         FROM store.receive_entry re
         LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
         WHERE
@@ -55,8 +65,10 @@ BEGIN
         SELECT
             re.material_uuid,
             ROUND(SUM(coalesce(re.quantity, 0)), 4)::float8 AS cp_quantity,
-            ROUND(SUM(coalesce(re.price, 0)), 4)::float8 AS cp_quantity_total_price
+            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0)), 4)::float8 AS cp_quantity_total_price_usd,
+            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0) * r.convention_rate), 4)::float8 as cp_quantity_total_price_bdt
         FROM store.receive_entry re
+        LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
         WHERE
             re.created_at IS NOT NULL
             AND re.created_at BETWEEN start_date::TIMESTAMP AND end_date::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
@@ -74,18 +86,6 @@ BEGIN
         GROUP BY
             i.material_uuid
     ),
-    material_convention_rate_usd AS (
-        SELECT
-            ROUND(SUM(r.convention_rate) / COUNT(r.convention_rate), 4)::float8 AS avg_convention_rates,
-            re.material_uuid
-        FROM store.receive r
-        LEFT JOIN store.receive_entry re ON r.uuid = re.receive_uuid
-        WHERE
-            re.created_at IS NOT NULL
-            AND re.created_at < end_date::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND r.convention_rate > 1
-        GROUP BY
-            re.material_uuid
-    ),
     sub_totals AS (
         SELECT
             m.uuid AS material_uuid,
@@ -95,23 +95,27 @@ BEGIN
             ca.name AS category_name,
             ba.name AS buyer_name,
             coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity, 0) AS opening_quantity,
-            coalesce(coalesce(op.op_quantity_total_price, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) * 
-            (coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity)) AS opening_quantity_total_price,
+            coalesce(coalesce(op.op_quantity_total_price_usd, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) * 
+            (coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity)) AS opening_quantity_total_price_usd,
+            coalesce(coalesce(op.op_quantity_total_price_bdt, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) *
+            (coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity)) AS opening_quantity_total_price_bdt,
             coalesce(cp.cp_quantity, 0) AS purchased_quantity,
-            coalesce(cp.cp_quantity_total_price, 0) AS purchased_quantity_total_price,
+            coalesce(cp.cp_quantity_total_price_usd, 0) AS purchased_quantity_total_price_usd,
+            coalesce(cp.cp_quantity_total_price_bdt, 0) AS purchased_quantity_total_price_bdt,
             coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity, 0) + coalesce(cp.cp_quantity, 0) AS sub_total_quantity,
-            coalesce(cp.cp_quantity_total_price, 0) + coalesce(coalesce(op.op_quantity_total_price, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) * 
-            coalesce(coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity),0) AS sub_total_quantity_total_price,
+            coalesce(cp.cp_quantity_total_price_usd, 0) + coalesce(coalesce(op.op_quantity_total_price_usd, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) * 
+            coalesce(coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity),0) AS sub_total_quantity_total_price_usd,
+            coalesce(cp.cp_quantity_total_price_bdt, 0) + coalesce(coalesce(op.op_quantity_total_price_bdt, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) *
+            coalesce(coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity),0) AS sub_total_quantity_total_price_bdt,
             coalesce(cc.cc_quantity, 0) AS consumption_quantity,
-            coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price, 0) + coalesce(cp.cp_quantity_total_price, 0)) / NULLIF(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 0), 0) AS consumption_quantity_total_price,
-            coalesce(mcr.avg_convention_rates,0) AS avg_convention_rates
+            coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price_usd, 0) + coalesce(cp.cp_quantity_total_price_usd, 0)) / NULLIF(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 0), 0) AS consumption_quantity_total_price_usd,
+            coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price_bdt, 0) + coalesce(cp.cp_quantity_total_price_bdt, 0)) / NULLIF(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 0), 0) AS consumption_quantity_total_price_bdt
         FROM
             store.material m
             LEFT JOIN opening op ON m.uuid = op.material_uuid
             LEFT JOIN purchase cp ON m.uuid = cp.material_uuid
             LEFT JOIN consumption cc ON m.uuid = cc.material_uuid
             LEFT JOIN opening_consumption oc ON m.uuid = oc.material_uuid
-            LEFT JOIN material_convention_rate_usd mcr ON m.uuid = mcr.material_uuid
             LEFT JOIN public.article pa ON m.article_uuid = pa.uuid
             LEFT JOIN public.category ca ON m.category_uuid = ca.uuid
             LEFT JOIN public.buyer ba ON pa.buyer_uuid = ba.uuid
@@ -123,22 +127,31 @@ BEGIN
         sub_totals.article_name,
         sub_totals.category_name,
         sub_totals.buyer_name,
-        sub_totals.opening_quantity AS opening_quantity,
-        coalesce(sub_totals.opening_quantity_total_price / NULLIF(sub_totals.opening_quantity, 0) * sub_totals.opening_quantity,0) AS opening_quantity_total_price,
-        coalesce(sub_totals.opening_quantity_total_price / NULLIF(sub_totals.opening_quantity, 0),0) AS opening_quantity_rate,
-        sub_totals.purchased_quantity AS purchased_quantity,
-        sub_totals.purchased_quantity_total_price AS purchased_quantity_total_price,
-        coalesce(sub_totals.purchased_quantity_total_price / NULLIF(sub_totals.purchased_quantity, 0),0) AS purchased_quantity_rate,
-        sub_totals.sub_total_quantity AS sub_total_quantity,
-        sub_totals.sub_total_quantity_total_price AS sub_total_quantity_total_price,
-        coalesce(sub_totals.sub_total_quantity_total_price / NULLIF(sub_totals.sub_total_quantity, 0),0) AS sub_total_quantity_rate,
-        sub_totals.consumption_quantity AS consumption_quantity,
-        sub_totals.consumption_quantity_total_price AS consumption_quantity_total_price,
-        coalesce(sub_totals.consumption_quantity_total_price / NULLIF(sub_totals.consumption_quantity, 0),0) AS consumption_quantity_rate,
-        sub_totals.sub_total_quantity - sub_totals.consumption_quantity AS closing_quantity,
-        sub_totals.sub_total_quantity_total_price - sub_totals.consumption_quantity_total_price AS closing_quantity_total_price,
-        coalesce((sub_totals.sub_total_quantity_total_price - sub_totals.consumption_quantity_total_price) / NULLIF(sub_totals.sub_total_quantity - sub_totals.consumption_quantity, 0),0) AS closing_quantity_rate,
-        sub_totals.avg_convention_rates
+        sub_totals.opening_quantity::float8 AS opening_quantity,
+        coalesce(sub_totals.opening_quantity_total_price_usd / NULLIF(sub_totals.opening_quantity, 0) * sub_totals.opening_quantity,0)::float8 AS opening_quantity_total_price_usd,
+        coalesce(sub_totals.opening_quantity_total_price_bdt / NULLIF(sub_totals.opening_quantity, 0) * sub_totals.opening_quantity,0)::float8 AS opening_quantity_total_price_bdt,
+        coalesce(sub_totals.opening_quantity_total_price_usd / NULLIF(sub_totals.opening_quantity, 0),0)::float8 AS opening_quantity_rate_usd,
+        coalesce(sub_totals.opening_quantity_total_price_bdt / NULLIF(sub_totals.opening_quantity, 0),0)::float8 AS opening_quantity_rate_bdt,
+        sub_totals.purchased_quantity::float8 AS purchased_quantity,
+        sub_totals.purchased_quantity_total_price_usd::float8 AS purchased_quantity_total_price_usd,
+        sub_totals.purchased_quantity_total_price_bdt::float8 AS purchased_quantity_total_price_bdt,
+        coalesce(sub_totals.purchased_quantity_total_price_usd / NULLIF(sub_totals.purchased_quantity, 0),0)::float8 AS purchased_quantity_rate_usd,
+        coalesce(sub_totals.purchased_quantity_total_price_bdt / NULLIF(sub_totals.purchased_quantity, 0),0)::float8 AS purchased_quantity_rate_bdt,
+        sub_totals.sub_total_quantity::float8 AS sub_total_quantity,
+        sub_totals.sub_total_quantity_total_price_usd::float8 AS sub_total_quantity_total_price_usd,
+        sub_totals.sub_total_quantity_total_price_bdt::float8 AS sub_total_quantity_total_price_bdt,
+        coalesce(sub_totals.sub_total_quantity_total_price_usd / NULLIF(sub_totals.sub_total_quantity, 0),0)::float8 AS sub_total_quantity_rate_usd,
+        coalesce(sub_totals.sub_total_quantity_total_price_bdt / NULLIF(sub_totals.sub_total_quantity, 0),0)::float8 AS sub_total_quantity_rate_bdt,
+        sub_totals.consumption_quantity::float8 AS consumption_quantity,
+        sub_totals.consumption_quantity_total_price_usd::float8 AS consumption_quantity_total_price_usd,
+        sub_totals.consumption_quantity_total_price_bdt::float8 AS consumption_quantity_total_price_bdt,
+        coalesce(sub_totals.consumption_quantity_total_price_usd / NULLIF(sub_totals.consumption_quantity, 0),0)::float8 AS consumption_quantity_rate_usd,
+        coalesce(sub_totals.consumption_quantity_total_price_bdt / NULLIF(sub_totals.consumption_quantity, 0),0)::float8 AS consumption_quantity_rate_bdt,
+        (sub_totals.sub_total_quantity - sub_totals.consumption_quantity)::float8 AS closing_quantity,
+        (sub_totals.sub_total_quantity_total_price_usd - sub_totals.consumption_quantity_total_price_usd)::float8 AS closing_quantity_total_price_usd,
+        (sub_totals.sub_total_quantity_total_price_bdt - sub_totals.consumption_quantity_total_price_bdt)::float8 AS closing_quantity_total_price_bdt,
+        coalesce((sub_totals.sub_total_quantity_total_price_usd - sub_totals.consumption_quantity_total_price_usd) / NULLIF(sub_totals.sub_total_quantity - sub_totals.consumption_quantity, 0),0)::float8 AS closing_quantity_rate_usd,
+        coalesce((sub_totals.sub_total_quantity_total_price_bdt - sub_totals.consumption_quantity_total_price_bdt) / NULLIF(sub_totals.sub_total_quantity - sub_totals.consumption_quantity, 0),0)::float8 AS closing_quantity_rate_bdt
     FROM
         sub_totals
     ORDER BY

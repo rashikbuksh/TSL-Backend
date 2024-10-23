@@ -136,21 +136,38 @@ export async function selectHrUser(req, res, next) {
 // store material, vendor, receive
 
 export async function selectMaterial(req, res, next) {
-	const materialPromise = db
-		.select({
-			value: storeSchema.material.uuid,
-			label: storeSchema.material.name,
-			unit: storeSchema.material.unit,
-		})
-		.from(storeSchema.material)
-		.orderBy(storeSchema.material.name);
+	const query = sql`
+		select
+			m.uuid as value,
+			concat(m.name, '-', a.name, '-', b.name, '-', c.name, '-', m.color) as label,
+			m.unit
+		from
+			store.material m
+		left join
+			public.article a on m.article_uuid = a.uuid
+		left join
+			public.buyer b on a.buyer_uuid = b.uuid
+		left join
+			public.category c on m.category_uuid = c.uuid
+		order by
+			m.name
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: `Material selected`,
-	};
-	handleResponse({ promise: materialPromise, res, next, ...toast });
+	const materialPromise = db.execute(query);
+	try {
+		const data = await materialPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Material selected`,
+		};
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 export async function selectVendor(req, res, next) {

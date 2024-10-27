@@ -39,6 +39,7 @@ export const master_lc = commercial.table('master_lc', {
 	value: PG_DECIMAL('value').default(0),
 	lien_bank: text('lien_bank').default(null),
 	payment_terms: integer('payment_terms').default(null),
+	unit: text('unit').default(null),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.notNull(),

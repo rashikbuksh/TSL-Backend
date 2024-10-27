@@ -37,7 +37,7 @@ export const vendor = store.table('vendor', {
 	uuid: uuid_primary,
 	name: text('name').notNull().unique(),
 	person: text('person').notNull(),
-	phone: text('phone').notNull(),
+	phone: text('phone').default(null),
 	address: text('address').notNull(),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)

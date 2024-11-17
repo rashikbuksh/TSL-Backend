@@ -97,4 +97,48 @@ export const receive_entry = store.table('receive_entry', {
 	remarks: text('remarks').default(null),
 });
 
+export const material_name = store.table('material_name', {
+	uuid: uuid_primary,
+	name: text('name').notNull().unique(),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const unit = store.table('unit', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const size = store.table('size', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const color = store.table('color', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export default store;

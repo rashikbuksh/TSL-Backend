@@ -708,10 +708,486 @@ const pathVendor = {
 	},
 };
 
+const pathMaterialName = {
+	'/store/material-name': {
+		get: {
+			tags: ['store.material_name'],
+			summary: 'Select all MaterialName',
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/store/material_name',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['store.material_name'],
+			summary: 'Insert MaterialName',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/material_name',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/material_name',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	'/store/material-name/{uuid}': {
+		get: {
+			tags: ['store.material_name'],
+			summary: 'Select MaterialName',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/material_name',
+							},
+						},
+					},
+				},
+			},
+		},
+
+		put: {
+			tags: ['store.material_name'],
+			summary: 'Update MaterialName',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/material_name',
+						},
+					},
+				},
+			},
+			responses: { 200: { description: 'Successful operation' } },
+		},
+
+		delete: {
+			tags: ['store.material_name'],
+			summary: 'Delete MaterialName',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: { type: 'string' },
+				},
+			],
+			responses: { 200: { description: 'Successful operation' } },
+		},
+	},
+};
+
+const pathUnit = {
+	'/store/unit': {
+		get: {
+			tags: ['store.unit'],
+			summary: 'Select all Unit',
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/store/unit',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['store.unit'],
+			summary: 'Insert Unit',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/unit',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/unit',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	'/store/unit/{uuid}': {
+		get: {
+			tags: ['store.unit'],
+			summary: 'Select Unit',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/unit',
+							},
+						},
+					},
+				},
+			},
+		},
+
+		put: {
+			tags: ['store.unit'],
+			summary: 'Update Unit',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/unit',
+						},
+					},
+				},
+			},
+			responses: { 200: { description: 'Successful operation' } },
+		},
+
+		delete: {
+			tags: ['store.unit'],
+			summary: 'Delete Unit',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: { type: 'string' },
+				},
+			],
+			responses: { 200: { description: 'Successful operation' } },
+		},
+	},
+};
+
+const pathSize = {
+	'/store/size': {
+		get: {
+			tags: ['store.size'],
+			summary: 'Select all Size',
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/store/size',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['store.size'],
+			summary: 'Insert Size',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/size',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/size',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	'/store/size/{uuid}': {
+		get: {
+			tags: ['store.size'],
+			summary: 'Select Size',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/size',
+							},
+						},
+					},
+				},
+			},
+		},
+
+		put: {
+			tags: ['store.size'],
+			summary: 'Update Size',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/size',
+						},
+					},
+				},
+			},
+			responses: { 200: { description: 'Successful operation' } },
+		},
+
+		delete: {
+			tags: ['store.size'],
+			summary: 'Delete Size',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: { type: 'string' },
+				},
+			],
+			responses: { 200: { description: 'Successful operation' } },
+		},
+	},
+};
+
+const pathColor = {
+	'/store/color': {
+		get: {
+			tags: ['store.color'],
+			summary: 'Select all Color',
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/store/color',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['store.color'],
+			summary: 'Insert Color',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/color',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/color',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+
+	'/store/color/{uuid}': {
+		get: {
+			tags: ['store.color'],
+			summary: 'Select Color',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/store/color',
+							},
+						},
+					},
+				},
+			},
+		},
+
+		put: {
+			tags: ['store.color'],
+			summary: 'Update Color',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/store/color',
+						},
+					},
+				},
+			},
+			responses: { 200: { description: 'Successful operation' } },
+		},
+
+		delete: {
+			tags: ['store.color'],
+			summary: 'Delete Color',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: { type: 'string' },
+				},
+			],
+			responses: { 200: { description: 'Successful operation' } },
+		},
+	},
+};
+
 export const pathStore = {
 	...pathIssue,
 	...pathMaterial,
 	...pathReceiveEntry,
 	...pathReceive,
 	...pathVendor,
+	...pathMaterialName,
+	...pathUnit,
+	...pathSize,
+	...pathColor,
 };

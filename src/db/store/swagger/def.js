@@ -128,6 +128,58 @@ export const defReceiveEntry = SED({
 	xml: 'Production/ReceiveEntry',
 });
 
+export const defUnit = SED({
+	required: ['uuid', 'name', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('Unit1'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Production/Unit',
+});
+
+export const defSize = SED({
+	required: ['uuid', 'name', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('Size1'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Production/Size',
+});
+
+export const defMaterialName = SED({
+	required: ['uuid', 'name', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('MaterialName1'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Production/MaterialName',
+});
+
+export const defColor = SED({
+	required: ['uuid', 'name', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('Color1'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Production/Color',
+});
+
 // * Marge All
 
 export const defStore = {
@@ -136,6 +188,10 @@ export const defStore = {
 	receive: defReceive,
 	issue: defIssue,
 	receive_entry: defReceiveEntry,
+	unit: defUnit,
+	size: defSize,
+	material_name: defMaterialName,
+	color: defColor,
 };
 
 // * Tag
@@ -160,5 +216,21 @@ export const tagStore = [
 	{
 		name: 'store.receive_entry',
 		description: 'Operations about receive entry',
+	},
+	{
+		name: 'store.unit',
+		description: 'Operations about unit',
+	},
+	{
+		name: 'store.size',
+		description: 'Operations about size',
+	},
+	{
+		name: 'store.material_name',
+		description: 'Operations about material name',
+	},
+	{
+		name: 'store.color',
+		description: 'Operations about color',
 	},
 ];

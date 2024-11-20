@@ -21,10 +21,11 @@ export const material = store.table('material', {
 	category_uuid: defaultUUID('category_uuid').references(
 		() => publicSchema.category.uuid
 	),
-	name: text('name').notNull(),
-	color: text('color').notNull(),
-	quantity: PG_DECIMAL('quantity').notNull(),
-	unit: text('unit').default(null),
+	name_uuid: defaultUUID('name_uuid').references(() => material_name.uuid),
+	color_uuid: defaultUUID('color_uuid').references(() => color.uuid),
+	quantity: PG_DECIMAL('quantity').notNull().default(0),
+	unit_uuid: defaultUUID('unit_uuid').references(() => unit.uuid),
+	size_uuid: defaultUUID('size_uuid').references(() => size.uuid),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.notNull(),

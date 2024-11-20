@@ -7,10 +7,11 @@ export const defMaterial = SED({
 		'uuid',
 		'article_uuid',
 		'category_uuid',
-		'name',
-		'color',
+		'name_uuid',
+		'color_uuid',
 		'quantity',
-		'unit',
+		'unit_uuid',
+		'size_uuid',
 		'created_by',
 		'created_at',
 	],
@@ -18,16 +19,17 @@ export const defMaterial = SED({
 		uuid: SE.uuid(),
 		article_uuid: SE.uuid(),
 		category_uuid: SE.uuid(),
-		name: SE.string('Material1'),
-		color: SE.string('Color1'),
+		name_uuid: SE.uuid(),
+		color_uuid: SE.uuid(),
 		quantity: SE.number(100),
-		unit: SE.string('kg'),
+		unit_uuid: SE.uuid(),
+		size_uuid: SE.uuid(),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Material',
+	xml: 'Store/Material',
 });
 
 //* ./schema.js#vendor
@@ -53,7 +55,7 @@ export const defVendor = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Vendor',
+	xml: 'Store/Vendor',
 });
 
 //* ./schema.js#receive
@@ -83,7 +85,7 @@ export const defReceive = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Receive',
+	xml: 'Store/Receive',
 });
 
 //* ./schema.js#issue
@@ -99,7 +101,7 @@ export const defIssue = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Issue',
+	xml: 'Store/Issue',
 });
 
 //* ./schema.js#receive_entry
@@ -125,7 +127,7 @@ export const defReceiveEntry = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/ReceiveEntry',
+	xml: 'Store/ReceiveEntry',
 });
 
 export const defUnit = SED({
@@ -138,7 +140,7 @@ export const defUnit = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Unit',
+	xml: 'Store/Unit',
 });
 
 export const defSize = SED({
@@ -151,7 +153,7 @@ export const defSize = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Size',
+	xml: 'Store/Size',
 });
 
 export const defMaterialName = SED({
@@ -164,7 +166,7 @@ export const defMaterialName = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/MaterialName',
+	xml: 'Store/MaterialName',
 });
 
 export const defColor = SED({
@@ -177,7 +179,7 @@ export const defColor = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Production/Color',
+	xml: 'Store/Color',
 });
 
 // * Marge All

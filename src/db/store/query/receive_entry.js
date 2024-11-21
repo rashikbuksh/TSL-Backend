@@ -9,14 +9,91 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 
-import { material, receive, receive_entry, vendor } from '../schema.js';
+import {
+	color,
+	material,
+	material_name,
+	receive,
+	receive_entry,
+	size,
+	unit,
+	vendor,
+} from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		uuid,
+		quantity,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+		article_uuid,
+		category_uuid,
+		name_uuid,
+		color_uuid,
+		unit_uuid,
+		size_uuid,
+		new_material_uuid,
+	} = req.body;
+
+	// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
+	const materialPromise = db
+		.select(material.uuid)
+		.from(material)
+		.where(
+			eq(material.article_uuid, article_uuid),
+			eq(material.category_uuid, category_uuid),
+			eq(material.name_uuid, name_uuid),
+			eq(material.color_uuid, color_uuid),
+			eq(material.unit_uuid, unit_uuid),
+			eq(material.size_uuid, size_uuid)
+		);
+
+	const materialResult = await materialPromise;
+
+	let material_uuid = new_material_uuid;
+
+	if (materialResult.length === 0) {
+		const materialInsertPromise = db
+			.insert(material)
+			.values({
+				uuid: new_material_uuid,
+				article_uuid,
+				category_uuid,
+				name_uuid,
+				color_uuid,
+				unit_uuid,
+				size_uuid,
+				quantity,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: material.uuid });
+
+		const materialInsertResult = await materialInsertPromise;
+		material_uuid = materialInsertResult[0].insertedUuid;
+	}
+
+	const receive_entry_values = {
+		uuid,
+		receive_uuid: req.params.receive_uuid,
+		material_uuid,
+		quantity,
+		price: req.body.price,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+	};
+
 	const receive_entryPromise = db
 		.insert(receive_entry)
-		.values(req.body)
+		.values(receive_entry_values)
 		.returning({ insertedUuid: receive_entry.uuid });
 
 	try {
@@ -38,9 +115,77 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		uuid,
+		quantity,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+		article_uuid,
+		category_uuid,
+		name_uuid,
+		color_uuid,
+		unit_uuid,
+		size_uuid,
+		new_material_uuid,
+	} = req.body;
+
+	// update the existing material with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
+
+	const materialPromise = db
+		.select(material.uuid)
+		.from(material)
+		.where(
+			eq(material.article_uuid, article_uuid),
+			eq(material.category_uuid, category_uuid),
+			eq(material.name_uuid, name_uuid),
+			eq(material.color_uuid, color_uuid),
+			eq(material.unit_uuid, unit_uuid),
+			eq(material.size_uuid, size_uuid)
+		);
+
+	const materialResult = await materialPromise;
+
+	let material_uuid = new_material_uuid;
+
+	if (materialResult.length === 0) {
+		const materialInsertPromise = db
+			.insert(material)
+			.values({
+				uuid: new_material_uuid,
+				article_uuid,
+				category_uuid,
+				name_uuid,
+				color_uuid,
+				unit_uuid,
+				size_uuid,
+				quantity,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: material.uuid });
+
+		const materialInsertResult = await materialInsertPromise;
+		material_uuid = materialInsertResult[0].insertedUuid;
+	}
+
+	const receive_entry_values = {
+		receive_uuid: req.params.receive_uuid,
+		material_uuid,
+		quantity,
+		price: req.body.price,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+	};
+
 	const receive_entryPromise = db
 		.update(receive_entry)
-		.set(req.body)
+		.set(receive_entry_values)
 		.where(eq(receive_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: receive_entry.uuid });
 
@@ -86,47 +231,49 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const query = sql`
-						SELECT
-								re.uuid,
-								re.receive_uuid,
-								v.uuid as vendor_uuid,
-								v.name as vendor_name,
-								concat('R', to_char(r.created_at, 'YY'), '-', LPAD(r.id::text, 4, '0')) AS receive_id,
-								re.material_uuid,
-								m.name AS material_name,
-								m.unit AS material_unit,
-								a.name AS article_name,
-								b.name AS buyer_name,
-								c.name AS category_name,
-								r.convention_rate::float8,
-								re.quantity::float8,
-								re.price::float8,
-								re.created_by,
-								u.name AS created_by_name,
-								re.created_at,
-								re.updated_at,
-								re.remarks
-							FROM 
-								store.receive_entry re
-							LEFT JOIN 
-								store.receive  r ON r.uuid = re.receive_uuid
-							LEFT JOIN 
-								store.material m ON m.uuid = re.material_uuid
-							LEFT JOIN 
-								public.article a ON a.uuid = m.article_uuid
-							LEFT JOIN 
-								public.buyer b ON b.uuid = a.buyer_uuid
-							LEFT JOIN 
-								public.category c ON c.uuid = m.category_uuid
-							LEFT JOIN 
-								hr.users u ON u.uuid = re.created_by
-							LEFT JOIN
-								store.vendor v ON v.uuid = r.vendor_uuid
-							ORDER BY
-								re.created_at DESC`;
 
-	const resultPromise = db.execute(query);
+	const resultPromise = db
+		.select({
+			uuid: receive_entry.uuid,
+			receive_uuid: receive_entry.receive_uuid,
+			vendor_uuid: receive.vendor_uuid,
+			vendor_name: vendor.name,
+			material_uuid: receive_entry.material_uuid,
+			article_uuid: material.article_uuid,
+			article_name: publicSchema.article.name,
+			category_uuid: material.category_uuid,
+			category_name: publicSchema.category.name,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			color_uuid: material.color_uuid,
+			color_name: color.name,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
+			size_uuid: material.size_uuid,
+			size_name: size.name,
+			quantity: decimalToNumber(receive_entry.quantity),
+			price: decimalToNumber(receive_entry.price),
+			created_at: receive_entry.created_at,
+			updated_at: receive_entry.updated_at,
+			remarks: receive_entry.remarks,
+		})
+		.from(receive_entry)
+		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
+		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.orderBy(desc(receive_entry.created_at));
 
 	try {
 		const data = await resultPromise;
@@ -135,7 +282,7 @@ export async function selectAll(req, res, next) {
 			type: 'select all',
 			message: 'receive_entry list',
 		};
-		return await res.status(200).json({ toast, data: data?.rows });
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({
 			error,
@@ -146,47 +293,49 @@ export async function selectAll(req, res, next) {
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const query = sql`
-						SELECT
-								re.uuid,
-								re.receive_uuid,
-								v.uuid as vendor_uuid,
-								v.name as vendor_name,
-								concat('R', to_char(r.created_at, 'YY'), '-', LPAD(r.id::text, 4, '0')) AS receive_id,
-								re.material_uuid,
-								m.name AS material_name,
-								m.unit AS material_unit,
-								a.name AS article_name,
-								b.name AS buyer_name,
-								c.name AS category_name,
-								r.convention_rate::float8,
-								re.quantity::float8,
-								re.price::float8,
-								re.created_by,
-								u.name AS created_by_name,
-								re.created_at,
-								re.updated_at,
-								re.remarks
-							FROM 
-								store.receive_entry re
-							LEFT JOIN 
-								store.receive  r ON r.uuid = re.receive_uuid
-							LEFT JOIN 
-								store.material m ON m.uuid = re.material_uuid
-							LEFT JOIN 
-								public.article a ON a.uuid = m.article_uuid
-							LEFT JOIN 
-								public.buyer b ON b.uuid = a.buyer_uuid
-							LEFT JOIN 
-								public.category c ON c.uuid = m.category_uuid
-							LEFT JOIN 
-								hr.users u ON u.uuid = re.created_by
-							LEFT JOIN
-								store.vendor v ON v.uuid = r.vendor_uuid
-							WHERE
-								re.uuid = ${req.params.uuid}`;
 
-	const resultPromise = db.execute(query);
+	const resultPromise = db
+		.select({
+			uuid: receive_entry.uuid,
+			receive_uuid: receive_entry.receive_uuid,
+			vendor_uuid: receive.vendor_uuid,
+			vendor_name: vendor.name,
+			material_uuid: receive_entry.material_uuid,
+			article_uuid: material.article_uuid,
+			article_name: publicSchema.article.name,
+			category_uuid: material.category_uuid,
+			category_name: publicSchema.category.name,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			color_uuid: material.color_uuid,
+			color_name: color.name,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
+			size_uuid: material.size_uuid,
+			size_name: size.name,
+			quantity: decimalToNumber(receive_entry.quantity),
+			price: decimalToNumber(receive_entry.price),
+			created_at: receive_entry.created_at,
+			updated_at: receive_entry.updated_at,
+			remarks: receive_entry.remarks,
+		})
+		.from(receive_entry)
+		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
+		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.where(eq(receive_entry.uuid, req.params.uuid));
 
 	try {
 		const data = await resultPromise;
@@ -195,7 +344,7 @@ export async function select(req, res, next) {
 			type: 'select one',
 			message: 'receive_entry details',
 		};
-		return await res.status(200).json({ toast, data: data?.rows[0] });
+		return await res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
 		await handleError({
 			error,
@@ -212,46 +361,57 @@ export async function selectByReceiveUuid(req, res, next) {
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			material_uuid: receive_entry.material_uuid,
-			material_name: material.name,
-			material_unit: material.unit,
+			article_uuid: material.article_uuid,
 			article_name: publicSchema.article.name,
-			buyer_name: publicSchema.buyer.name,
+			category_uuid: material.category_uuid,
 			category_name: publicSchema.category.name,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			color_uuid: material.color_uuid,
+			color_name: color.name,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
+			size_uuid: material.size_uuid,
+			size_name: size.name,
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
-			created_by: receive_entry.created_by,
-			created_by_name: hrSchema.users.name,
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
 		})
 		.from(receive_entry)
 		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
-		.leftJoin(
-			hrSchema.users,
-			eq(receive_entry.created_by, hrSchema.users.uuid)
-		)
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
 		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
 		.leftJoin(
 			publicSchema.article,
 			eq(material.article_uuid, publicSchema.article.uuid)
 		)
 		.leftJoin(
-			publicSchema.buyer,
-			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
-		)
-		.leftJoin(
 			publicSchema.category,
 			eq(material.category_uuid, publicSchema.category.uuid)
 		)
-		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
 		.where(eq(receive_entry.receive_uuid, req.params.receive_uuid))
 		.orderBy(desc(receive_entry.created_at));
-	const toast = {
-		status: 200,
-		type: 'select all',
-		message: 'receive_entry list',
-	};
 
-	handleResponse({ promise: receive_entryPromise, res, next, ...toast });
+	try {
+		const data = await receive_entryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select all',
+			message: 'receive_entry list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }

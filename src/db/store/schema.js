@@ -1,4 +1,4 @@
-import { integer, pgSchema, pgTable, text } from 'drizzle-orm/pg-core';
+import { index, integer, pgSchema, pgTable, text, unique } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -13,26 +13,48 @@ import * as publicSchema from '../public/schema.js';
 
 const store = pgSchema('store');
 
-export const material = store.table('material', {
-	uuid: uuid_primary,
-	article_uuid: defaultUUID('article_uuid').references(
-		() => publicSchema.article.uuid
-	),
-	category_uuid: defaultUUID('category_uuid').references(
-		() => publicSchema.category.uuid
-	),
-	name_uuid: defaultUUID('name_uuid').references(() => material_name.uuid),
-	color_uuid: defaultUUID('color_uuid').references(() => color.uuid),
-	quantity: PG_DECIMAL('quantity').notNull().default(0),
-	unit_uuid: defaultUUID('unit_uuid').references(() => unit.uuid),
-	size_uuid: defaultUUID('size_uuid').references(() => size.uuid),
-	created_by: defaultUUID('created_by')
-		.references(() => hrSchema.users.uuid)
-		.notNull(),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
+export const material = store.table(
+	'material',
+	{
+		uuid: uuid_primary,
+		article_uuid: defaultUUID('article_uuid').references(
+			() => publicSchema.article.uuid
+		),
+		category_uuid: defaultUUID('category_uuid').references(
+			() => publicSchema.category.uuid
+		),
+		name_uuid: defaultUUID('name_uuid').references(
+			() => material_name.uuid
+		),
+		color_uuid: defaultUUID('color_uuid').references(() => color.uuid),
+		quantity: PG_DECIMAL('quantity').notNull().default(0),
+		unit_uuid: defaultUUID('unit_uuid').references(() => unit.uuid),
+		size_uuid: defaultUUID('size_uuid').references(() => size.uuid),
+		created_by: defaultUUID('created_by')
+			.references(() => hrSchema.users.uuid)
+			.notNull(),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	},
+	(table) => {
+		return {
+			combined_unique: unique({
+				columns: [
+					table.article_uuid,
+					table.category_uuid,
+					table.name_uuid,
+					table.color_uuid,
+					table.unit_uuid,
+					table.size_uuid,
+				],
+			}),
+			uuid_index: index({
+				columns: [table.uuid],
+			}),
+		};
+	}
+);
 
 export const vendor = store.table('vendor', {
 	uuid: uuid_primary,

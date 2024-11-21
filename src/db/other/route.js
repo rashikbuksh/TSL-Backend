@@ -4,26 +4,38 @@ import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();
 
-//public buyer , category, article
+// WARNING: public
+// buyer , category, article
 otherRouter.get('/buyer/value/label', otherOperations.selectBuyer);
 otherRouter.get('/category/value/label', otherOperations.selectCategory);
 otherRouter.get('/article/value/label', otherOperations.selectArticle);
 
-// hr user, department, designation
+// WARNING: hr
+// user, department, designation
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
 otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
 otherRouter.get('/designation/value/label', otherOperations.selectDesignation);
 
-// store material, vendor, receive
+// WARNING: store
+// material, vendor, receive
 otherRouter.get('/material/value/label', otherOperations.selectMaterial);
+otherRouter.get(
+	'/material-name/value/label',
+	otherOperations.selectMaterialName
+);
+otherRouter.get('/color/value/label', otherOperations.selectColor);
+otherRouter.get('/size/value/label', otherOperations.selectSize);
+otherRouter.get('/unit/value/label', otherOperations.selectUnit);
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
 // otherRouter.get('/receive/value/label', otherOperations.selectReceive);
 
-// commercial lc
+// WARNING: commercial
+// lc, master-lc
 otherRouter.get('/lc/value/label', otherOperations.selectLc);
 otherRouter.get('/master-lc/value/label', otherOperations.selectMasterLc);
 
-//public buyer , category, article swagger route
+// NOTE: public
+// buyer , category, article swagger route
 const pathPublic = {
 	'/other/buyer/value/label': {
 		get: {
@@ -212,7 +224,8 @@ const pathHr = {
 	},
 };
 
-// store material, vendor, receive swagger route
+// NOTE: store
+// material, material name, color, size, unit, vendor swagger route
 
 const pathStore = {
 	'/other/material/value/label': {
@@ -236,6 +249,126 @@ const pathStore = {
 									label: {
 										type: 'string',
 										example: 'material 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/material-name/value/label': {
+		get: {
+			operationId: 'selectMaterialName',
+			tags: ['other'],
+			summary: 'Select Material Name',
+			description: 'Select Material Name',
+			responses: {
+				200: {
+					description: 'Returns a all material names.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'material name 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/color/value/label': {
+		get: {
+			operationId: 'selectColorName',
+			tags: ['other'],
+			summary: 'Select color Name',
+			description: 'Select color Name',
+			responses: {
+				200: {
+					description: 'Returns a all color names.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'color name 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/size/value/label': {
+		get: {
+			operationId: 'selectSizeName',
+			tags: ['other'],
+			summary: 'Select size Name',
+			description: 'Select size Name',
+			responses: {
+				200: {
+					description: 'Returns a all size names.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'size name 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/unit/value/label': {
+		get: {
+			operationId: 'selectUnitName',
+			tags: ['other'],
+			summary: 'Select unit Name',
+			description: 'Select unit Name',
+			responses: {
+				200: {
+					description: 'Returns a all unit names.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'unit name 1',
 									},
 								},
 							},
@@ -307,7 +440,8 @@ const pathStore = {
 	// },
 };
 
-// commercial lc swagger route
+// NOTE: commercial
+// lc, master-lc swagger route
 
 const pathCommercial = {
 	'/other/lc/value/label': {

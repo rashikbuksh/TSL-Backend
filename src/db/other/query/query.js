@@ -8,10 +8,10 @@ import {
 
 import db from '../../index.js';
 
-import * as publicSchema from '../../public/schema.js';
-import * as hrSchema from '../../hr/schema.js';
-import * as storeSchema from '../../store/schema.js';
 import * as commercialSchema from '../../commercial/schema.js';
+import * as hrSchema from '../../hr/schema.js';
+import * as publicSchema from '../../public/schema.js';
+import * as storeSchema from '../../store/schema.js';
 
 // public buyer , category, article
 export async function selectBuyer(req, res, next) {
@@ -133,7 +133,7 @@ export async function selectHrUser(req, res, next) {
 	});
 }
 
-// store material, vendor, receive
+// store material, material_name, unit, color, size, vendor, receive
 
 export async function selectMaterial(req, res, next) {
 	const query = sql`
@@ -170,6 +170,106 @@ export async function selectMaterial(req, res, next) {
 	}
 }
 
+export async function selectMaterialName(req, res, next) {
+	const materialNamePromise = db
+		.select({
+			value: storeSchema.material_name.uuid,
+			label: storeSchema.material_name.name,
+		})
+		.from(storeSchema.material_name)
+		.orderBy(storeSchema.material_name.name);
+
+	try {
+		const data = await materialNamePromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Material Name selected`,
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
+
+export async function selectColor(req, res, next) {
+	const colorPromise = db
+		.select({
+			value: storeSchema.color.uuid,
+			label: storeSchema.color.name,
+		})
+		.from(storeSchema.color)
+		.orderBy(storeSchema.color.name);
+
+	try {
+		const data = await colorPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Color selected`,
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
+
+export async function selectSize(req, res, next) {
+	const sizePromise = db
+		.select({
+			value: storeSchema.size.uuid,
+			label: storeSchema.size.name,
+		})
+		.from(storeSchema.size)
+		.orderBy(storeSchema.size.name);
+
+	try {
+		const data = await sizePromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Size selected`,
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
+
+export async function selectUnit(req, res, next) {
+	const unitPromise = db
+		.select({
+			value: storeSchema.unit.uuid,
+			label: storeSchema.unit.name,
+		})
+		.from(storeSchema.unit)
+		.orderBy(storeSchema.unit.name);
+
+	try {
+		const data = await unitPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Unit selected`,
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
+
 export async function selectVendor(req, res, next) {
 	const vendorPromise = db
 		.select({
@@ -179,12 +279,20 @@ export async function selectVendor(req, res, next) {
 		.from(storeSchema.vendor)
 		.orderBy(storeSchema.vendor.name);
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: `Vendor selected`,
-	};
-	handleResponse({ promise: vendorPromise, res, next, ...toast });
+	try {
+		const data = await vendorPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Vendor selected`,
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 // export async function selectReceive(req, res, next) {

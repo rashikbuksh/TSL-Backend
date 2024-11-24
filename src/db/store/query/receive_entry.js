@@ -82,7 +82,10 @@ export async function insert(req, res, next) {
 	const receive_entry_values = {
 		uuid,
 		receive_uuid: req.params.receive_uuid,
-		material_uuid,
+		material_uuid:
+			materialResult.length === 0
+				? new_material_uuid
+				: materialResult[0].uuid,
 		quantity,
 		price: req.body.price,
 		created_by,
@@ -174,7 +177,10 @@ export async function update(req, res, next) {
 
 	const receive_entry_values = {
 		receive_uuid: req.params.receive_uuid,
-		material_uuid,
+		material_uuid:
+			materialResult.length === 0
+				? new_material_uuid
+				: materialResult[0].uuid,
 		quantity,
 		price: req.body.price,
 		created_by,

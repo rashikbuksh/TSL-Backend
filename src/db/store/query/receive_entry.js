@@ -127,68 +127,64 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const {
-		uuid,
-		quantity,
-		created_by,
-		created_at,
-		updated_at,
-		remarks,
+		material_uuid,
 		article_uuid,
 		category_uuid,
 		name_uuid,
 		color_uuid,
 		unit_uuid,
 		size_uuid,
-		new_material_uuid,
+		quantity,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
 	} = req.body;
-
+	console.log('req.body', req.body);
+	console.log('params', req.params.uuid);
 	// update the existing material with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
 
-	const materialPromise = db
-		.select(material.uuid)
-		.from(material)
-		.where(
-			eq(material.article_uuid, article_uuid),
-			eq(material.category_uuid, category_uuid),
-			eq(material.name_uuid, name_uuid),
-			eq(material.color_uuid, color_uuid),
-			eq(material.unit_uuid, unit_uuid),
-			eq(material.size_uuid, size_uuid)
-		);
+	// const materialPromise = db
+	// 	.select(material.uuid)
+	// 	.from(material)
+	// 	.where(
+	// 		eq(material.article_uuid, article_uuid),
+	// 		eq(material.category_uuid, category_uuid),
+	// 		eq(material.name_uuid, name_uuid),
+	// 		eq(material.color_uuid, color_uuid),
+	// 		eq(material.unit_uuid, unit_uuid),
+	// 		eq(material.size_uuid, size_uuid)
+	// 	);
 
-	const materialResult = await materialPromise;
+	// const materialResult = await materialPromise;
 
-	let material_uuid = new_material_uuid;
+	// let material_uuid = new_material_uuid;
 
-	if (materialResult.length === 0) {
-		const materialInsertPromise = db
-			.insert(material)
-			.values({
-				uuid: new_material_uuid,
-				article_uuid,
-				category_uuid,
-				name_uuid,
-				color_uuid,
-				unit_uuid,
-				size_uuid,
-				quantity,
-				created_by,
-				created_at,
-				updated_at,
-				remarks,
-			})
-			.returning({ insertedUuid: material.uuid });
+	// if (materialResult.length === 0) {
+	const materialUpdatePromise = db
+		.update(material)
+		.set({
+			article_uuid,
+			category_uuid,
+			name_uuid,
+			color_uuid,
+			unit_uuid,
+			size_uuid,
+			quantity,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		})
+		.where(eq(material.uuid, material_uuid));
 
-		const materialInsertResult = await materialInsertPromise;
-		material_uuid = materialInsertResult[0].insertedUuid;
-	}
+	// const materialInsertResult = await materialInsertPromise;
+	// material_uuid = materialInsertResult[0].insertedUuid;
+	//}
 
 	const receive_entry_values = {
-		receive_uuid: req.params.receive_uuid,
-		material_uuid:
-			materialResult.length === 0
-				? new_material_uuid
-				: materialResult[0].uuid,
+		receive_uuid: req.body.receive_uuid,
+		material_uuid: material_uuid,
 		quantity,
 		price: req.body.price,
 		created_by,
@@ -197,20 +193,48 @@ export async function update(req, res, next) {
 		remarks,
 	};
 
+	console.log('receive_entry_values', receive_entry_values);
+
 	const receive_entryPromise = db
 		.update(receive_entry)
 		.set(receive_entry_values)
 		.where(eq(receive_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: receive_entry.uuid });
 
+	// try {
+	// 	const data = await receive_entryPromise;
+	// 	console.log('data', data);
+	// 	const toast = {
+	// 		status: 200,
+	// 		type: 'update',
+	// 		message: `${data[0].updatedUuid} updated`,
+	// 	};
+	// 	return await res.status(200).json({ toast, data });
+	// } catch (error) {
+	// 	await handleError({
+	// 		error,
+	// 		res,
+	// 	});
+	// }
 	try {
 		const data = await receive_entryPromise;
-		const toast = {
-			status: 200,
-			type: 'update',
-			message: `${data[0].updatedUuid} updated`,
-		};
-		return await res.status(200).json({ toast, data });
+		console.log('data', data);
+
+		if (data && data.length > 0) {
+			const toast = {
+				status: 200,
+				type: 'update',
+				message: `${data[0].updatedUuid} updated`,
+			};
+			return await res.status(200).json({ toast, data });
+		} else {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: 'No entry found to update',
+			};
+			return await res.status(404).json({ toast });
+		}
 	} catch (error) {
 		await handleError({
 			error,
@@ -271,6 +295,7 @@ export async function selectAll(req, res, next) {
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
 			convention_rate: decimalToNumber(receive.convention_rate),
+			created_by: receive_entry.created_by,
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
@@ -341,6 +366,7 @@ export async function select(req, res, next) {
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
 			convention_rate: decimalToNumber(receive.convention_rate),
+			created_by: receive_entry.created_by,
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
@@ -409,6 +435,7 @@ export async function selectByReceiveUuid(req, res, next) {
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
 			convention_rate: decimalToNumber(receive.convention_rate),
+			created_by: receive_entry.created_by,
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,

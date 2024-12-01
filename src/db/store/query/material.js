@@ -41,14 +41,14 @@ export async function update(req, res, next) {
 		.update(material)
 		.set(req.body)
 		.where(eq(material.uuid, req.params.uuid))
-		.returning({ updatedName: material.name });
+		.returning({ updatedUuid: material.uuid });
 
 	try {
 		const data = await materialPromise;
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `${data[0].updatedName} updated`,
+			message: `${data[0].updatedUuid} updated`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

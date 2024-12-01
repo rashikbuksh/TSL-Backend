@@ -255,6 +255,8 @@ export async function selectAll(req, res, next) {
 			material_uuid: receive_entry.material_uuid,
 			article_uuid: material.article_uuid,
 			article_name: publicSchema.article.name,
+			buyer_uuid: publicSchema.article.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			category_uuid: material.category_uuid,
 			category_name: publicSchema.category.name,
 			name_uuid: material.name_uuid,
@@ -286,6 +288,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			publicSchema.category,
 			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.orderBy(desc(receive_entry.created_at));
 
@@ -317,6 +323,8 @@ export async function select(req, res, next) {
 			material_uuid: receive_entry.material_uuid,
 			article_uuid: material.article_uuid,
 			article_name: publicSchema.article.name,
+			buyer_uuid: publicSchema.article.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			category_uuid: material.category_uuid,
 			category_name: publicSchema.category.name,
 			name_uuid: material.name_uuid,
@@ -348,6 +356,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			publicSchema.category,
 			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.where(eq(receive_entry.uuid, req.params.uuid));
 

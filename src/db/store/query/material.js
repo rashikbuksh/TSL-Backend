@@ -8,7 +8,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { material } from '../schema.js';
+import { material, material_name, unit, color, size } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -90,10 +90,15 @@ export async function selectAll(req, res, next) {
 			buyer_name: publicSchema.buyer.name,
 			category_uuid: material.category_uuid,
 			category_name: publicSchema.category.name,
-			name: material.name,
-			color: material.color,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			color_uuid: material.color_uuid,
+			color_name: color.name,
+			size_uuid: material.size_uuid,
+			size_name: size.name,
 			quantity: decimalToNumber(material.quantity),
-			unit: material.unit,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
 			created_by: material.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: material.created_at,
@@ -114,6 +119,10 @@ export async function selectAll(req, res, next) {
 			publicSchema.buyer,
 			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
 		.orderBy(desc(material.created_at));
 
 	const toast = {
@@ -139,10 +148,15 @@ export async function select(req, res, next) {
 			buyer_name: publicSchema.buyer.name,
 			category_uuid: material.category_uuid,
 			category_name: publicSchema.category.name,
-			name: material.name,
-			color: material.color,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			color_uuid: material.color_uuid,
+			color_name: color.name,
+			size_uuid: material.size_uuid,
+			size_name: size.name,
 			quantity: decimalToNumber(material.quantity),
-			unit: material.unit,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
 			created_by: material.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: material.created_at,
@@ -163,6 +177,10 @@ export async function select(req, res, next) {
 			publicSchema.buyer,
 			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
 		.where(eq(material.uuid, req.params.uuid));
 
 	try {

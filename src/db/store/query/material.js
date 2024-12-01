@@ -63,14 +63,14 @@ export async function remove(req, res, next) {
 	const materialPromise = db
 		.delete(material)
 		.where(eq(material.uuid, req.params.uuid))
-		.returning({ deletedName: material.name });
+		.returning({ deletedUuid: material.uuid });
 
 	try {
 		const data = await materialPromise;
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data[0].deletedName} deleted`,
+			message: `${data[0].deletedUuid} deleted`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

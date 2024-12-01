@@ -250,6 +250,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: receive_entry.uuid,
 			receive_uuid: receive_entry.receive_uuid,
+			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			material_uuid: receive_entry.material_uuid,
@@ -269,6 +270,7 @@ export async function selectAll(req, res, next) {
 			size_name: size.name,
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
+			convention_rate: decimalToNumber(receive.convention_rate),
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
@@ -318,6 +320,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: receive_entry.uuid,
 			receive_uuid: receive_entry.receive_uuid,
+			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			material_uuid: receive_entry.material_uuid,
@@ -337,6 +340,7 @@ export async function select(req, res, next) {
 			size_name: size.name,
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
+			convention_rate: decimalToNumber(receive.convention_rate),
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
@@ -384,11 +388,14 @@ export async function selectByReceiveUuid(req, res, next) {
 		.select({
 			uuid: receive_entry.uuid,
 			receive_uuid: receive_entry.receive_uuid,
+			receive_id: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			material_uuid: receive_entry.material_uuid,
 			article_uuid: material.article_uuid,
 			article_name: publicSchema.article.name,
+			buyer_uuid: publicSchema.article.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			category_uuid: material.category_uuid,
 			category_name: publicSchema.category.name,
 			name_uuid: material.name_uuid,
@@ -401,6 +408,7 @@ export async function selectByReceiveUuid(req, res, next) {
 			size_name: size.name,
 			quantity: decimalToNumber(receive_entry.quantity),
 			price: decimalToNumber(receive_entry.price),
+			convention_rate: decimalToNumber(receive.convention_rate),
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
@@ -420,6 +428,10 @@ export async function selectByReceiveUuid(req, res, next) {
 		.leftJoin(
 			publicSchema.category,
 			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.where(eq(receive_entry.receive_uuid, req.params.receive_uuid))
 		.orderBy(desc(receive_entry.created_at));

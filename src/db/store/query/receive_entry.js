@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, sql, and } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -8,7 +8,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-
+import { nanoid } from 'nanoid';
 import {
 	color,
 	material,
@@ -23,8 +23,10 @@ import {
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	console.log('req.body', req.body);
+	let new_material_uuid = nanoid(15);
+	console.log('new_material_uuid', new_material_uuid);
 	const {
-		uuid,
 		quantity,
 		created_by,
 		created_at,
@@ -36,25 +38,31 @@ export async function insert(req, res, next) {
 		color_uuid,
 		unit_uuid,
 		size_uuid,
-		new_material_uuid,
 	} = req.body;
 
 	// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
 	const materialPromise = db
-		.select(material.uuid)
+		.select({
+			uuid: material.uuid,
+		})
 		.from(material)
 		.where(
-			eq(material.article_uuid, article_uuid),
-			eq(material.category_uuid, category_uuid),
-			eq(material.name_uuid, name_uuid),
-			eq(material.color_uuid, color_uuid),
-			eq(material.unit_uuid, unit_uuid),
-			eq(material.size_uuid, size_uuid)
+			and(
+				eq(material.article_uuid, article_uuid),
+				eq(material.category_uuid, category_uuid),
+				eq(material.name_uuid, name_uuid),
+				eq(material.color_uuid, color_uuid),
+				eq(material.unit_uuid, unit_uuid),
+				eq(material.size_uuid, size_uuid)
+			)
 		);
 
 	const materialResult = await materialPromise;
 
 	let material_uuid = new_material_uuid;
+
+	console.log('materialResult', materialResult);
+	console.log('materialResult.length', materialResult.length);
 
 	if (materialResult.length === 0) {
 		const materialInsertPromise = db
@@ -65,9 +73,9 @@ export async function insert(req, res, next) {
 				category_uuid,
 				name_uuid,
 				color_uuid,
-				unit_uuid,
 				size_uuid,
 				quantity,
+				unit_uuid,
 				created_by,
 				created_at,
 				updated_at,
@@ -80,7 +88,7 @@ export async function insert(req, res, next) {
 	}
 
 	const receive_entry_values = {
-		uuid,
+		uuid: req.body.uuid,
 		receive_uuid: req.params.receive_uuid,
 		material_uuid:
 			materialResult.length === 0

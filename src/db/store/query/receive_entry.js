@@ -159,24 +159,40 @@ export async function update(req, res, next) {
 	// const materialResult = await materialPromise;
 
 	// let material_uuid = new_material_uuid;
-
+	const material_values = {
+		article_uuid,
+		category_uuid,
+		name_uuid,
+		color_uuid,
+		unit_uuid,
+		size_uuid,
+		quantity,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+	};
+	console.log('material_values', material_values);
+	console.log('material_uuid', material_uuid);
 	// if (materialResult.length === 0) {
-	const materialUpdatePromise = db
-		.update(material)
-		.set({
-			article_uuid,
-			category_uuid,
-			name_uuid,
-			color_uuid,
-			unit_uuid,
-			size_uuid,
-			quantity,
-			created_by,
-			created_at,
-			updated_at,
-			remarks,
-		})
-		.where(eq(material.uuid, material_uuid));
+	try {
+		const materialUpdatePromise = db
+			.update(material)
+			.set(material_values)
+			.where(eq(material.uuid, material_uuid));
+		// Return all columns to verify the update
+
+		const materialUpdateResult = await materialUpdatePromise;
+		console.log('materialUpdateResult', materialUpdateResult);
+
+		if (materialUpdateResult.length === 0) {
+			console.error('No rows updated in the material table');
+		} else {
+			console.log('Material table updated successfully');
+		}
+	} catch (error) {
+		console.error('Error updating material table:', error);
+	}
 
 	// const materialInsertResult = await materialInsertPromise;
 	// material_uuid = materialInsertResult[0].insertedUuid;

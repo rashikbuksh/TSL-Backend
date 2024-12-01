@@ -89,7 +89,7 @@ export async function insert(req, res, next) {
 
 	const receive_entry_values = {
 		uuid: req.body.uuid,
-		receive_uuid: req.params.receive_uuid,
+		receive_uuid: req.body.receive_uuid,
 		material_uuid:
 			materialResult.length === 0
 				? new_material_uuid

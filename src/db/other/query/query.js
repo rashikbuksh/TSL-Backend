@@ -138,9 +138,9 @@ export async function selectHrUser(req, res, next) {
 export async function selectMaterial(req, res, next) {
 	const query = sql`
 		select
-			m.uuid as value,
-			concat(m.name, '-', a.name, '-', b.name, '-', c.name, '-', m.color) as label,
-			m.unit
+			m.name_uuid as value,
+			concat(mn.name, '-', a.name, '-', b.name, '-', c.name, '-', mc.name) as label,
+			mu.name
 		from
 			store.material m
 		left join
@@ -149,8 +149,16 @@ export async function selectMaterial(req, res, next) {
 			public.buyer b on a.buyer_uuid = b.uuid
 		left join
 			public.category c on m.category_uuid = c.uuid
+		LEFT JOIN
+			store.material_name mn on m.name_uuid = mn.uuid
+		LEFT JOIN
+			store.color mc on m.color_uuid = mc.uuid
+		LEFT JOIN
+			store.size ms on m.size_uuid = ms.uuid
+		LEFT JOIN
+			store.unit mu on m.unit_uuid = mu.uuid
 		order by
-			m.name
+			mn.name
 	`;
 
 	const materialPromise = db.execute(query);

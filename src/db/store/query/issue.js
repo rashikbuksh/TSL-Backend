@@ -8,7 +8,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { issue, material } from '../schema.js';
+import { issue, material, material_name, unit } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -90,8 +90,10 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: issue.uuid,
 			material_uuid: issue.material_uuid,
-			material_name: material.name,
-			material_unit: material.unit,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
 			quantity: decimalToNumber(material.quantity),
 			article_name: publicSchema.article.name,
 			buyer_name: publicSchema.buyer.name,
@@ -118,6 +120,8 @@ export async function selectAll(req, res, next) {
 			publicSchema.buyer,
 			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
 		.orderBy(desc(issue.created_at));
 
 	const toast = {

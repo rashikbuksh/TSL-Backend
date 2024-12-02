@@ -16,14 +16,14 @@ export async function insert(req, res, next) {
 	const master_lcPromise = db
 		.insert(master_lc)
 		.values(req.body)
-		.returning({ insertedUuid: master_lc.uuid });
+		.returning({ insertedLcNum: master_lc.number });
 
 	try {
 		const data = await master_lcPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${data[0].insertedLcNum} master-lc inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -41,14 +41,14 @@ export async function update(req, res, next) {
 		.update(master_lc)
 		.set(req.body)
 		.where(eq(master_lc.uuid, req.params.uuid))
-		.returning({ updatedUuid: master_lc.uuid });
+		.returning({ updatedLcNum: master_lc.number });
 
 	try {
 		const data = await master_lcPromise;
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `${data[0].updatedUuid} updated`,
+			message: `${data[0].updatedLcNum} master-lc updated`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
@@ -65,14 +65,14 @@ export async function remove(req, res, next) {
 	const master_lcPromise = db
 		.delete(master_lc)
 		.where(eq(master_lc.uuid, req.params.uuid))
-		.returning({ deletedUuid: master_lc.uuid });
+		.returning({ deletedLcNum: master_lc.number });
 
 	try {
 		const data = await master_lcPromise;
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data[0].deletedUuid} deleted`,
+			message: `${data[0].deletedLcNum} master-lc deleted`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

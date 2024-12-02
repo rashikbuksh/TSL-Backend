@@ -16,14 +16,14 @@ export async function insert(req, res, next) {
 	const lcPromise = db
 		.insert(lc)
 		.values(req.body)
-		.returning({ insertedUuid: lc.uuid });
+		.returning({ insertedLcNum: lc.number });
 
 	try {
 		const data = await lcPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${data[0].insertedLcNum} lc inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -41,14 +41,14 @@ export async function update(req, res, next) {
 		.update(lc)
 		.set(req.body)
 		.where(eq(lc.uuid, req.params.uuid))
-		.returning({ updatedUuid: lc.uuid });
+		.returning({ updatedLcNum: lc.number });
 
 	try {
 		const data = await lcPromise;
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `${data[0].updatedUuid} updated`,
+			message: `${data[0].updatedLcNum} lc updated`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
@@ -65,14 +65,14 @@ export async function remove(req, res, next) {
 	const lcPromise = db
 		.delete(lc)
 		.where(eq(lc.uuid, req.params.uuid))
-		.returning({ deletedUuid: lc.uuid });
+		.returning({ deletedLcNum: lc.number });
 
 	try {
 		const data = await lcPromise;
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data[0].deletedUuid} deleted`,
+			message: `${data[0].deletedLcNum} lc deleted`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

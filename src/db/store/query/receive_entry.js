@@ -108,10 +108,25 @@ export async function insert(req, res, next) {
 
 	try {
 		const data = await receive_entryPromise;
+
+		const materialPromise = db
+			.select({
+				name: material_name.name,
+			})
+			.from(material_name)
+			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
+			.leftJoin(
+				receive_entry,
+				eq(material.uuid, receive_entry.material_uuid)
+			)
+			.where(eq(receive_entry.uuid, data[0].insertedUuid));
+
+		const materialData = await materialPromise;
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${materialData[0].name} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -299,13 +314,26 @@ export async function update(req, res, next) {
 	// }
 	try {
 		const data = await receive_entryPromise;
-		console.log('data', data);
+
+		const materialPromise = db
+			.select({
+				name: material_name.name,
+			})
+			.from(material_name)
+			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
+			.leftJoin(
+				receive_entry,
+				eq(material.uuid, receive_entry.material_uuid)
+			)
+			.where(eq(receive_entry.uuid, data[0].updatedUuid));
+
+		const materialData = await materialPromise;
 
 		if (data && data.length > 0) {
 			const toast = {
 				status: 200,
 				type: 'update',
-				message: `${data[0].updatedUuid} updated`,
+				message: `${materialData[0].name} updated`,
 			};
 			return await res.status(200).json({ toast, data });
 		} else {
@@ -334,10 +362,24 @@ export async function remove(req, res, next) {
 
 	try {
 		const data = await receive_entryPromise;
+		const materialPromise = db
+			.select({
+				name: material_name.name,
+			})
+			.from(material_name)
+			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
+			.leftJoin(
+				receive_entry,
+				eq(material.uuid, receive_entry.material_uuid)
+			)
+			.where(eq(receive_entry.uuid, data[0].deletedUuid));
+
+		const materialData = await materialPromise;
+
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data[0].deletedUuid} deleted`,
+			message: `${materialData[0].name} deleted`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

@@ -16,7 +16,7 @@ export async function insert(req, res, next) {
 	const materialPromise = db
 		.insert(material)
 		.values(req.body)
-		.returning({ insertedName: material.name });
+		.returning({ insertedUuid: material.uuid });
 
 	try {
 		const data = await materialPromise;

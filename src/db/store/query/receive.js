@@ -87,8 +87,16 @@ export async function remove(req, res, next) {
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
+		let customMessage = 'An error occurred while processing your request.';
+		if (error.code === '23503') {
+			customMessage =
+				'Unable to delete Receive: Dependencies exist in other sections';
+		}
 		await handleError({
-			error,
+			error: {
+				...error,
+				message: customMessage,
+			},
 			res,
 		});
 	}

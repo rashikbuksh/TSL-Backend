@@ -41,25 +41,14 @@ export async function update(req, res, next) {
 		.update(material)
 		.set(req.body)
 		.where(eq(material.uuid, req.params.uuid))
-		.returning({ updatedUuid: material.name_uuid })
-		.then(async (updatedMaterial) => {
-			const updatedUuid = updatedMaterial[0].updatedUuid;
-			const materialName = await db
-				.select(material_name.name)
-				.from(material_name)
-				.where(eq(material_name.uuid, updatedUuid));
-			return {
-				updatedUuid,
-				materialName: materialName[0].name,
-			};
-		});
+		.returning({ updatedUuid: material.name_uuid });
 
 	try {
 		const data = await materialPromise;
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `${data.materialName} updated`,
+			message: `${data[0].updatedUuid} updated`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
@@ -74,25 +63,14 @@ export async function remove(req, res, next) {
 	const materialPromise = db
 		.delete(material)
 		.where(eq(material.uuid, req.params.uuid))
-		.returning({ deletedUuid: material.uuid })
-		.then(async (deletedMaterial) => {
-			const deletedUuid = deletedMaterial[0].deletedUuid;
-			const materialName = await db
-				.select(material_name.name)
-				.from(material_name)
-				.where(eq(material_name.uuid, deletedUuid));
-			return {
-				deletedUuid,
-				materialName: materialName[0].name,
-			};
-		});
+		.returning({ deletedUuid: material.uuid });
 
 	try {
 		const data = await materialPromise;
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data.materialName} deleted`,
+			message: `${data[0].deletedUuid} deleted`,
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

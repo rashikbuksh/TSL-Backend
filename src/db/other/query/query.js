@@ -138,7 +138,7 @@ export async function selectHrUser(req, res, next) {
 export async function selectMaterial(req, res, next) {
 	const query = sql`
 		select
-			m.name_uuid as value,
+			m.uuid as value,
 			concat(mn.name, '-', a.name, '-', b.name, '-', c.name, '-', mc.name) as label,
 			mu.name
 		from

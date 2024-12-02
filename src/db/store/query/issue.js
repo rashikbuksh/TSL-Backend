@@ -146,13 +146,16 @@ export async function select(req, res, next) {
 		.select({
 			uuid: issue.uuid,
 			material_uuid: issue.material_uuid,
-			material_name: material.name,
-			material_unit: material.unit,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
 			quantity: decimalToNumber(material.quantity),
 			article_name: publicSchema.article.name,
 			buyer_name: publicSchema.buyer.name,
 			category_name: publicSchema.category.name,
 			quantity: decimalToNumber(issue.quantity),
+			store_quantity: decimalToNumber(material.quantity),
 			created_by: issue.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: issue.created_at,
@@ -174,6 +177,8 @@ export async function select(req, res, next) {
 			publicSchema.buyer,
 			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
 		.where(eq(issue.uuid, req.params.uuid));
 
 	try {

@@ -20,14 +20,14 @@ export async function insert(req, res, next) {
 
 	try {
 		const data = await materialPromise;
-		const materialPromise = db
+		const materialPromised = db
 			.select({
 				name: material_name.name,
 			})
 			.from(material_name)
 			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
 			.where(eq(material.uuid, data[0].insertedUuid));
-		const materialData = await materialPromise;
+		const materialData = await materialPromised;
 		const toast = {
 			status: 201,
 			type: 'insert',
@@ -49,18 +49,18 @@ export async function update(req, res, next) {
 		.update(material)
 		.set(req.body)
 		.where(eq(material.uuid, req.params.uuid))
-		.returning({ updatedUuid: material.name_uuid });
+		.returning({ updatedUuid: material.uuid });
 
 	try {
 		const data = await materialPromise;
-		const materialPromise = db
+		const materialPromised = db
 			.select({
 				name: material_name.name,
 			})
 			.from(material_name)
 			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
 			.where(eq(material.uuid, data[0].updatedUuid));
-		const materialData = await materialPromise;
+		const materialData = await materialPromised;
 		const toast = {
 			status: 200,
 			type: 'update',
@@ -83,14 +83,14 @@ export async function remove(req, res, next) {
 
 	try {
 		const data = await materialPromise;
-		const materialPromise = db
+		const materialPromised = db
 			.select({
 				name: material_name.name,
 			})
 			.from(material_name)
 			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
 			.where(eq(material.uuid, data[0].deletedUuid));
-		const materialData = await materialPromise;
+		const materialData = await materialPromised;
 		const toast = {
 			status: 200,
 			type: 'delete',

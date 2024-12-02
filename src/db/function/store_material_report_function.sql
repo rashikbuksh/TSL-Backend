@@ -89,8 +89,8 @@ BEGIN
     sub_totals AS (
         SELECT
             m.uuid AS material_uuid,
-            m.name AS material_name,
-            m.unit AS material_unit,
+            mn.name AS material_name,
+            su.name AS material_unit,
             pa.name AS article_name,
             ca.name AS category_name,
             ba.name AS buyer_name,
@@ -112,6 +112,8 @@ BEGIN
             coalesce(cc.cc_quantity * (coalesce(op.op_quantity_total_price_bdt, 0) + coalesce(cp.cp_quantity_total_price_bdt, 0)) / NULLIF(coalesce(op.op_quantity, 0) + coalesce(cp.cp_quantity, 0), 0), 0) AS consumption_quantity_total_price_bdt
         FROM
             store.material m
+            LEFT JOIN store.material_name mn ON m.name_uuid = mn.uuid
+            LEFT JOIN store.unit su ON m.unit_uuid = su.uuid
             LEFT JOIN opening op ON m.uuid = op.material_uuid
             LEFT JOIN purchase cp ON m.uuid = cp.material_uuid
             LEFT JOIN consumption cc ON m.uuid = cc.material_uuid

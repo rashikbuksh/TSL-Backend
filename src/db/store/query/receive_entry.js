@@ -23,7 +23,7 @@ import {
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log('req.body', req.body);
+	// console.log('req.body', req.body);
 	let new_material_uuid = nanoid(15);
 	console.log('new_material_uuid', new_material_uuid);
 	const {
@@ -197,9 +197,9 @@ export async function update(req, res, next) {
 	// material_uuid = materialInsertResult[0].insertedUuid;
 	//}
 
-	console.log('req.body', req.body);
+	// console.log('req.body', req.body);
 	let new_material_uuid = nanoid(15);
-	console.log('new_material_uuid', new_material_uuid);
+	// console.log('new_material_uuid', new_material_uuid);
 	const {
 		quantity,
 		created_by,
@@ -235,8 +235,8 @@ export async function update(req, res, next) {
 
 	let material_uuid = new_material_uuid;
 
-	console.log('materialResult', materialResult);
-	console.log('materialResult.length', materialResult.length);
+	// console.log('materialResult', materialResult);
+	// console.log('materialResult.length', materialResult.length);
 
 	if (materialResult.length === 0) {
 		const materialInsertPromise = db
@@ -274,7 +274,7 @@ export async function update(req, res, next) {
 		remarks,
 	};
 
-	console.log('receive_entry_values', receive_entry_values);
+	// console.log('receive_entry_values', receive_entry_values);
 
 	const receive_entryPromise = db
 		.update(receive_entry)

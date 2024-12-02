@@ -86,7 +86,10 @@ export async function remove(req, res, next) {
 	const issuePromise = db
 		.delete(issue)
 		.where(eq(issue.uuid, req.params.uuid))
-		.returning({ deletedUuid: issue.uuid });
+		.returning({
+			deletedUuid: issue.uuid,
+			material_uuid: issue.material_uuid,
+		});
 
 	try {
 		const data = await issuePromise;
@@ -96,8 +99,7 @@ export async function remove(req, res, next) {
 			})
 			.from(material_name)
 			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
-			.leftJoin(issue, eq(material.uuid, issue.material_uuid))
-			.where(eq(issue.uuid, data[0].deletedUuid));
+			.where(eq(material.uuid, data[0].material_uuid));
 		const materialData = await materialPromise;
 		const toast = {
 			status: 200,

@@ -99,6 +99,7 @@ export async function selectAll(req, res, next) {
 			buyer_name: publicSchema.buyer.name,
 			category_name: publicSchema.category.name,
 			quantity: decimalToNumber(issue.quantity),
+			store_quantity: decimalToNumber(material.quantity),
 			created_by: issue.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: issue.created_at,

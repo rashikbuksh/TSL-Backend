@@ -377,14 +377,19 @@ export async function selectAll(req, res, next) {
 			price: decimalToNumber(receive_entry.price),
 			convention_rate: decimalToNumber(receive.convention_rate),
 			created_by: receive_entry.created_by,
+			created_by_name: hrSchema.users.name,
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
 		})
 		.from(receive_entry)
 		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
-		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
 		.leftJoin(material, eq(receive_entry.material_uuid, material.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(receive_entry.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
 		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
 		.leftJoin(color, eq(material.color_uuid, color.uuid))
 		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
@@ -401,6 +406,7 @@ export async function selectAll(req, res, next) {
 			publicSchema.buyer,
 			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
 		)
+
 		.orderBy(desc(receive_entry.created_at));
 
 	try {

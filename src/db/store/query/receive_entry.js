@@ -126,22 +126,22 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
-		material_uuid,
-		article_uuid,
-		category_uuid,
-		name_uuid,
-		color_uuid,
-		unit_uuid,
-		size_uuid,
-		quantity,
-		created_by,
-		created_at,
-		updated_at,
-		remarks,
-	} = req.body;
-	console.log('req.body', req.body);
-	console.log('params', req.params.uuid);
+	// const {
+	// 	material_uuid,
+	// 	article_uuid,
+	// 	category_uuid,
+	// 	name_uuid,
+	// 	color_uuid,
+	// 	unit_uuid,
+	// 	size_uuid,
+	// 	quantity,
+	// 	created_by,
+	// 	created_at,
+	// 	updated_at,
+	// 	remarks,
+	// } = req.body;
+	// console.log('req.body', req.body);
+	// console.log('params', req.params.uuid);
 	// update the existing material with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
 
 	// const materialPromise = db
@@ -159,48 +159,115 @@ export async function update(req, res, next) {
 	// const materialResult = await materialPromise;
 
 	// let material_uuid = new_material_uuid;
-	const material_values = {
+	// const material_values = {
+	// 	article_uuid,
+	// 	category_uuid,
+	// 	name_uuid,
+	// 	color_uuid,
+	// 	unit_uuid,
+	// 	size_uuid,
+	// 	quantity,
+	// 	created_by,
+	// 	created_at,
+	// 	updated_at,
+	// 	remarks,
+	// };
+	// console.log('material_values', material_values);
+	// console.log('material_uuid', material_uuid);
+	// if (materialResult.length === 0) {
+	// try {
+	// 	const materialUpdatePromise = db
+	// 		.update(material)
+	// 		.set(material_values)
+	// 		.where(eq(material.uuid, material_uuid));
+	// 	// Return all columns to verify the update
+
+	// 	const materialUpdateResult = await materialUpdatePromise;
+	// 	console.log('materialUpdateResult', materialUpdateResult);
+
+	// 	if (materialUpdateResult.length === 0) {
+	// 		console.error('No rows updated in the material table');
+	// 	} else {
+	// 		console.log('Material table updated successfully');
+	// 	}
+	// } catch (error) {
+	// 	console.error('Error updating material table:', error);
+	// }
+
+	// const materialInsertResult = await materialInsertPromise;
+	// material_uuid = materialInsertResult[0].insertedUuid;
+	//}
+
+	console.log('req.body', req.body);
+	let new_material_uuid = nanoid(15);
+	console.log('new_material_uuid', new_material_uuid);
+	const {
+		quantity,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
 		article_uuid,
 		category_uuid,
 		name_uuid,
 		color_uuid,
 		unit_uuid,
 		size_uuid,
-		quantity,
-		created_by,
-		created_at,
-		updated_at,
-		remarks,
-	};
-	console.log('material_values', material_values);
-	console.log('material_uuid', material_uuid);
-	// if (materialResult.length === 0) {
-	try {
-		const materialUpdatePromise = db
-			.update(material)
-			.set(material_values)
-			.where(eq(material.uuid, material_uuid));
-		// Return all columns to verify the update
+	} = req.body;
 
-		const materialUpdateResult = await materialUpdatePromise;
-		console.log('materialUpdateResult', materialUpdateResult);
+	// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
+	const materialPromise = db
+		.select({
+			uuid: material.uuid,
+		})
+		.from(material)
+		.where(
+			and(
+				eq(material.article_uuid, article_uuid),
+				eq(material.category_uuid, category_uuid),
+				eq(material.name_uuid, name_uuid),
+				eq(material.color_uuid, color_uuid),
+				eq(material.unit_uuid, unit_uuid),
+				eq(material.size_uuid, size_uuid)
+			)
+		);
 
-		if (materialUpdateResult.length === 0) {
-			console.error('No rows updated in the material table');
-		} else {
-			console.log('Material table updated successfully');
-		}
-	} catch (error) {
-		console.error('Error updating material table:', error);
+	const materialResult = await materialPromise;
+
+	let material_uuid = new_material_uuid;
+
+	console.log('materialResult', materialResult);
+	console.log('materialResult.length', materialResult.length);
+
+	if (materialResult.length === 0) {
+		const materialInsertPromise = db
+			.insert(material)
+			.values({
+				uuid: new_material_uuid,
+				article_uuid,
+				category_uuid,
+				name_uuid,
+				color_uuid,
+				size_uuid,
+				quantity,
+				unit_uuid,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: material.uuid });
+
+		const materialInsertResult = await materialInsertPromise;
+		material_uuid = materialInsertResult[0].insertedUuid;
 	}
-
-	// const materialInsertResult = await materialInsertPromise;
-	// material_uuid = materialInsertResult[0].insertedUuid;
-	//}
 
 	const receive_entry_values = {
 		receive_uuid: req.body.receive_uuid,
-		material_uuid: material_uuid,
+		material_uuid:
+			materialResult.length === 0
+				? new_material_uuid
+				: materialResult[0].uuid,
 		quantity,
 		price: req.body.price,
 		created_by,

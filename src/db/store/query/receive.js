@@ -21,7 +21,9 @@ export async function insert(req, res, next) {
 	const receivePromise = db
 		.insert(receive)
 		.values(req.body)
-		.returning({ insertedName: receive.commercial_invoice_number });
+		.returning({
+			insertedName: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await receivePromise;
@@ -46,7 +48,9 @@ export async function update(req, res, next) {
 		.update(receive)
 		.set(req.body)
 		.where(eq(receive.uuid, req.params.uuid))
-		.returning({ updatedName: receive.commercial_invoice_number });
+		.returning({
+			updatedName: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await receivePromise;
@@ -70,7 +74,9 @@ export async function remove(req, res, next) {
 	const receivePromise = db
 		.delete(receive)
 		.where(eq(receive.uuid, req.params.uuid))
-		.returning({ deletedName: receive.commercial_invoice_number });
+		.returning({
+			deletedName: sql`concat('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await receivePromise;

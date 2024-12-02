@@ -125,7 +125,8 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(material_name.created_by, hrSchema.users.uuid)
-		);
+		)
+		.where(eq(material_name.uuid, req.params.uuid));
 
 	try {
 		const data = await material_namePromise;

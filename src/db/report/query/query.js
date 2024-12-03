@@ -9,7 +9,7 @@ import db from '../../index.js';
 
 export async function storeMaterialReport(req, res, next) {
 	const { start_date, end_date } = req.params;
-	console.log(start_date, end_date);
+	
 	const query = sql`
                    SELECT * 
                    FROM 
@@ -36,7 +36,7 @@ export async function storeMaterialReport(req, res, next) {
 
 export async function storeVendorWiseMaterialReport(req, res, next) {
 	const { start_date, end_date } = req.params;
-	console.log(start_date, end_date);
+	
 	const query = sql`
                 SELECT 
 				   	vendor.uuid as vendor_uuid,

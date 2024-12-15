@@ -131,11 +131,11 @@ export async function selectAll(req, res, next) {
 			created_at: receive.created_at,
 			updated_at: receive.updated_at,
 			remarks: receive.remarks,
-			receive_entry_count: db.sql`(
+			receive_entry_count: decimalToNumber(sql`(
 				select count(*)
 				from store.receive_entry
 				where store.receive_entry.receive_uuid = receive.uuid
-			)`,
+			)`),
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))

@@ -10,7 +10,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as commercialSchema from '../../commercial/schema.js';
 
-import { receive, vendor } from '../schema.js';
+import { receive, receive_entry, vendor } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 
 const lcProperties = alias(vendor, 'lcProperties');
@@ -71,6 +71,10 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const receiveEntryPromise = db
+		.delete(receive_entry)
+		.where(eq(receive_entry.receive_uuid, req.params.uuid));
+
 	const receivePromise = db
 		.delete(receive)
 		.where(eq(receive.uuid, req.params.uuid))
@@ -79,6 +83,7 @@ export async function remove(req, res, next) {
 		});
 
 	try {
+		await receiveEntryPromise;
 		const data = await receivePromise;
 		const toast = {
 			status: 200,
@@ -126,6 +131,11 @@ export async function selectAll(req, res, next) {
 			created_at: receive.created_at,
 			updated_at: receive.updated_at,
 			remarks: receive.remarks,
+			receive_entry_count: db.sql`(
+				select count(*)
+				from store.receive_entry
+				where store.receive_entry.receive_uuid = receive.uuid
+			)`,
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))

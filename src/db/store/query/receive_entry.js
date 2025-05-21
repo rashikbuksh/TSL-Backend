@@ -305,7 +305,7 @@ export async function update(req, res, next) {
 	// console.log('req.body', req.body);
 	let new_material_uuid = nanoid(15);
 	// console.log('new_material_uuid', new_material_uuid);
-	const {
+	let {
 		quantity,
 		created_by,
 		created_at,
@@ -318,6 +318,172 @@ export async function update(req, res, next) {
 		unit_uuid,
 		size_uuid,
 	} = req.body;
+
+	// check if article_uuid exists if not then insert into article table
+	const articlePromise = db
+		.select({
+			uuid: publicSchema.article.uuid,
+		})
+		.from(publicSchema.article)
+		.where(eq(publicSchema.article.name, article_uuid));
+
+	const articleResult = await articlePromise;
+
+	if (articleResult.length === 0) {
+		const articleInsertPromise = db
+			.insert(publicSchema.article)
+			.values({
+				uuid: nanoid(15),
+				name: article_uuid,
+				buyer_uuid: null,
+				created_by,
+				created_at,
+				updated_at,
+			})
+			.returning({ insertedUuid: publicSchema.article.uuid });
+
+		const articleInsertResult = await articleInsertPromise;
+		article_uuid = articleInsertResult[0].insertedUuid;
+	} else {
+		article_uuid = articleResult[0].uuid;
+	}
+
+	// check if category_uuid exists if not then insert into category table
+	const categoryPromise = db
+		.select({
+			uuid: publicSchema.category.uuid,
+		})
+		.from(publicSchema.category)
+		.where(eq(publicSchema.category.name, category_uuid));
+
+	const categoryResult = await categoryPromise;
+
+	if (categoryResult.length === 0) {
+		const categoryInsertPromise = db
+			.insert(publicSchema.category)
+			.values({
+				uuid: nanoid(15),
+				name: category_uuid,
+				created_by,
+				created_at,
+				updated_at,
+			})
+			.returning({ insertedUuid: publicSchema.category.uuid });
+		const categoryInsertResult = await categoryInsertPromise;
+		category_uuid = categoryInsertResult[0].insertedUuid;
+	} else {
+		category_uuid = categoryResult[0].uuid;
+	}
+
+	// check if name_uuid exists if not then insert into material_name table
+	const namePromise = db
+		.select({
+			uuid: material_name.uuid,
+		})
+		.from(material_name)
+		.where(eq(material_name.name, name_uuid));
+
+	const nameResult = await namePromise;
+
+	if (nameResult.length === 0) {
+		const nameInsertPromise = db
+			.insert(material_name)
+			.values({
+				uuid: nanoid(15),
+				name: name_uuid,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: material_name.uuid });
+		const nameInsertResult = await nameInsertPromise;
+		name_uuid = nameInsertResult[0].insertedUuid;
+	} else {
+		name_uuid = nameResult[0].uuid;
+	}
+	// check if color_uuid exists if not then insert into color table
+	const colorPromise = db
+		.select({
+			uuid: color.uuid,
+		})
+		.from(color)
+		.where(eq(color.name, color_uuid));
+
+	const colorResult = await colorPromise;
+
+	if (colorResult.length === 0) {
+		const colorInsertPromise = db
+			.insert(color)
+			.values({
+				uuid: nanoid(15),
+				name: color_uuid,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: color.uuid });
+		const colorInsertResult = await colorInsertPromise;
+		color_uuid = colorInsertResult[0].insertedUuid;
+	} else {
+		color_uuid = colorResult[0].uuid;
+	}
+	// check if unit_uuid exists if not then insert into unit table
+	const unitPromise = db
+		.select({
+			uuid: unit.uuid,
+		})
+		.from(unit)
+		.where(eq(unit.name, unit_uuid));
+
+	const unitResult = await unitPromise;
+
+	if (unitResult.length === 0) {
+		const unitInsertPromise = db
+			.insert(unit)
+			.values({
+				uuid: nanoid(15),
+				name: unit_uuid,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: unit.uuid });
+		const unitInsertResult = await unitInsertPromise;
+		unit_uuid = unitInsertResult[0].insertedUuid;
+	} else {
+		unit_uuid = unitResult[0].uuid;
+	}
+
+	// check if size_uuid exists if not then insert into size table
+	const sizePromise = db
+		.select({
+			uuid: size.uuid,
+		})
+		.from(size)
+		.where(eq(size.name, size_uuid));
+
+	const sizeResult = await sizePromise;
+
+	if (sizeResult.length === 0) {
+		const sizeInsertPromise = db
+			.insert(size)
+			.values({
+				uuid: nanoid(15),
+				name: size_uuid,
+				created_by,
+				created_at,
+				updated_at,
+				remarks,
+			})
+			.returning({ insertedUuid: size.uuid });
+		const sizeInsertResult = await sizeInsertPromise;
+		size_uuid = sizeInsertResult[0].insertedUuid;
+	} else {
+		size_uuid = sizeResult[0].uuid;
+	}
 
 	// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
 	const materialPromise = db

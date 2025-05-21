@@ -224,7 +224,7 @@ export async function insert(req, res, next) {
 
 	const materialResult = await materialPromise;
 
-	let new_material_uuid = null;
+	let new_material_uuid = nanoid(15);
 
 	if (materialResult.length === 0) {
 		const materialInsertPromise = db

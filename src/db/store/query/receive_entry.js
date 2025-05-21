@@ -25,7 +25,7 @@ export async function insert(req, res, next) {
 
 	// console.log('req.body', req.body);
 
-	const {
+	let {
 		quantity,
 		created_by,
 		created_at,
@@ -156,7 +156,7 @@ export async function insert(req, res, next) {
 		})
 		.from(unit)
 		.where(eq(unit.name, unit_uuid));
-		
+
 	const unitResult = await unitPromise;
 
 	if (unitResult.length === 0) {

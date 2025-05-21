@@ -26,7 +26,7 @@ export async function insert(req, res, next) {
 	// console.log('req.body', req.body);
 	let new_material_uuid = nanoid(15);
 
-	const {
+	let {
 		quantity,
 		created_by,
 		created_at,

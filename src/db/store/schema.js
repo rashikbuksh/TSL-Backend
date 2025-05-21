@@ -1,4 +1,11 @@
-import { index, integer, pgSchema, pgTable, text, unique } from 'drizzle-orm/pg-core';
+import {
+	index,
+	integer,
+	pgSchema,
+	pgTable,
+	text,
+	unique,
+} from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,

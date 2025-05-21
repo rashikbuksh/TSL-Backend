@@ -34,7 +34,7 @@ server.get(
 
 // listen
 server.listen(SERVER_PORT, () => {
-	console.log('Server listening on port: ' + SERVER_PORT, '🚀 - FZL Backend');
+	console.log('Server listening on port: ' + SERVER_PORT, '🚀 - TSL Backend');
 });
 
 export default server;

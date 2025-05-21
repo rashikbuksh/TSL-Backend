@@ -31,7 +31,9 @@ export const article = pgTable(
 	'article',
 	{
 		uuid: uuid_primary,
-		buyer_uuid: defaultUUID('buyer_uuid').references(() => buyer.uuid),
+		buyer_uuid: defaultUUID('buyer_uuid')
+			.references(() => buyer.uuid)
+			.default(null),
 		name: text('name').notNull(),
 		created_by: defaultUUID('created_by')
 			.references(() => hrSchema.users.uuid)

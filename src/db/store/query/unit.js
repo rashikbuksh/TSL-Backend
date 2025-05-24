@@ -88,7 +88,8 @@ export async function selectAll(req, res, next) {
 			remarks: unit.remarks,
 		})
 		.from(unit)
-		.leftJoin(hrSchema.users, eq(unit.created_by, hrSchema.users.uuid));
+		.leftJoin(hrSchema.users, eq(unit.created_by, hrSchema.users.uuid))
+		.orderBy(desc(unit.created_at));
 
 	try {
 		const data = await unitPromise;

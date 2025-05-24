@@ -91,7 +91,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(material_name.created_by, hrSchema.users.uuid)
-		);
+		)
+		.orderBy(desc(material_name.created_at));
 
 	try {
 		const data = await material_namePromise;

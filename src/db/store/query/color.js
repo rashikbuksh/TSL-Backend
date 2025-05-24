@@ -89,7 +89,8 @@ export async function selectAll(req, res, next) {
 			remarks: color.remarks,
 		})
 		.from(color)
-		.leftJoin(hrSchema.users, eq(color.created_by, hrSchema.users.uuid));
+		.leftJoin(hrSchema.users, eq(color.created_by, hrSchema.users.uuid))
+		.orderBy(desc(color.created_at));
 
 	try {
 		const data = await colorPromise;

@@ -517,12 +517,12 @@ export async function insertMany(req, res, next) {
 			materialResult.length === 0
 				? new_material_uuid
 				: materialResult[0].uuid;
-		req.body.quantity = quantity;
+		req.body.quantity = item.quantity;
 		req.body.price = item.price;
-		req.body.created_by = created_by;
-		req.body.created_at = created_at;
-		req.body.updated_at = updated_at;
-		req.body.remarks = remarks;
+		req.body.created_by = item.created_by;
+		req.body.created_at = item.created_at;
+		req.body.updated_at = item.updated_at;
+		req.body.remarks = item.remarks;
 	});
 
 	const receive_entryPromise = db

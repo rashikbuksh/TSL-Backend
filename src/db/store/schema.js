@@ -93,7 +93,7 @@ export const receive = store.table('receive', {
 	commercial_invoice_number: text('commercial_invoice_number').notNull(),
 	commercial_invoice_value: PG_DECIMAL('commercial_invoice_value').default(0),
 	convention_rate: PG_DECIMAL('convention_rate').notNull(),
-	inventory_date: DateTime('inventory_date').notNull(),
+	inventory_date: DateTime('inventory_date').default(null),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.notNull(),

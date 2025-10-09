@@ -19,7 +19,7 @@ storeRouter.delete('/material/:uuid', materialOperations.remove);
 storeRouter.get('/material', materialOperations.selectAll);
 storeRouter.get('/material/:uuid', materialOperations.select);
 
-storeRouter.post('/receive-entry', receive_entryOperations.insert);
+storeRouter.post('/receive-entry', receive_entryOperations.insertMany);
 storeRouter.put('/receive-entry/:uuid', receive_entryOperations.update);
 storeRouter.delete('/receive-entry/:uuid', receive_entryOperations.remove);
 storeRouter.get('/receive-entry', receive_entryOperations.selectAll);

@@ -296,6 +296,272 @@ export async function insert(req, res, next) {
 	}
 }
 
+export async function insertMany(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	// console.log('req.body', req.body);
+	let new_material_uuid = nanoid(15);
+
+	// check if article_uuid exists if not then insert into article table
+	req.body.forEach(async (item) => {
+		const articlePromise = db
+			.select({
+				uuid: publicSchema.article.uuid,
+			})
+			.from(publicSchema.article)
+			.where(eq(publicSchema.article.name, item.article_uuid));
+
+		const articleResult = await articlePromise;
+
+		if (articleResult.length === 0 && item.article_uuid) {
+			const articleInsertPromise = db
+				.insert(publicSchema.article)
+				.values({
+					uuid: nanoid(15),
+					name: item.article_uuid,
+					buyer_uuid: null,
+					created_by,
+					created_at,
+					updated_at,
+				})
+				.returning({ insertedUuid: publicSchema.article.uuid });
+
+			const articleInsertResult = await articleInsertPromise;
+			item.article_uuid = articleInsertResult[0].insertedUuid;
+		} else if (articleResult.length > 0) {
+			item.article_uuid = articleResult[0].uuid;
+		}
+
+		// check if category_uuid exists if not then insert into category table
+		const categoryPromise = db
+			.select({
+				uuid: publicSchema.category.uuid,
+			})
+			.from(publicSchema.category)
+			.where(eq(publicSchema.category.name, item.category_uuid));
+
+		const categoryResult = await categoryPromise;
+
+		if (categoryResult.length === 0 && item.category_uuid) {
+			const categoryInsertPromise = db
+				.insert(publicSchema.category)
+				.values({
+					uuid: nanoid(15),
+					name: item.category_uuid,
+					created_by,
+					created_at,
+					updated_at,
+				})
+				.returning({ insertedUuid: publicSchema.category.uuid });
+			const categoryInsertResult = await categoryInsertPromise;
+			item.category_uuid = categoryInsertResult[0].insertedUuid;
+		} else if (categoryResult.length > 0) {
+			item.category_uuid = categoryResult[0].uuid;
+		}
+
+		// check if name_uuid exists if not then insert into material_name table
+		const namePromise = db
+			.select({
+				uuid: material_name.uuid,
+			})
+			.from(material_name)
+			.where(eq(material_name.name, item.name_uuid));
+
+		const nameResult = await namePromise;
+
+		if (nameResult.length === 0 && item.name_uuid) {
+			const nameInsertPromise = db
+				.insert(material_name)
+				.values({
+					uuid: nanoid(15),
+					name: item.name_uuid,
+					created_by,
+					created_at,
+					updated_at,
+					remarks,
+				})
+				.returning({ insertedUuid: material_name.uuid });
+			const nameInsertResult = await nameInsertPromise;
+			item.name_uuid = nameInsertResult[0].insertedUuid;
+		} else if (nameResult.length > 0) {
+			item.name_uuid = nameResult[0].uuid;
+		}
+		// check if color_uuid exists if not then insert into color table
+		const colorPromise = db
+			.select({
+				uuid: color.uuid,
+			})
+			.from(color)
+			.where(eq(color.name, item.color_uuid));
+
+		const colorResult = await colorPromise;
+		if (colorResult.length === 0 && item.color_uuid) {
+			const colorInsertPromise = db
+				.insert(color)
+				.values({
+					uuid: nanoid(15),
+					name: item.color_uuid,
+					created_by,
+					created_at,
+					updated_at,
+					remarks,
+				})
+				.returning({ insertedUuid: color.uuid });
+			const colorInsertResult = await colorInsertPromise;
+			item.color_uuid = colorInsertResult[0].insertedUuid;
+		} else if (colorResult.length > 0) {
+			item.color_uuid = colorResult[0].uuid;
+		}
+		// check if unit_uuid exists if not then insert into unit table
+		const unitPromise = db
+			.select({
+				uuid: unit.uuid,
+			})
+			.from(unit)
+			.where(eq(unit.name, item.unit_uuid));
+
+		const unitResult = await unitPromise;
+		if (unitResult.length === 0 && item.unit_uuid) {
+			const unitInsertPromise = db
+				.insert(unit)
+				.values({
+					uuid: nanoid(15),
+					name: item.unit_uuid,
+					created_by,
+					created_at,
+					updated_at,
+					remarks,
+				})
+				.returning({ insertedUuid: unit.uuid });
+			const unitInsertResult = await unitInsertPromise;
+			item.unit_uuid = unitInsertResult[0].insertedUuid;
+		} else if (unitResult.length > 0) {
+			item.unit_uuid = unitResult[0].uuid;
+		}
+
+		// check if size_uuid exists if not then insert into size table
+		const sizePromise = db
+			.select({
+				uuid: size.uuid,
+			})
+			.from(size)
+			.where(eq(size.name, item.size_uuid));
+
+		const sizeResult = await sizePromise;
+
+		if (sizeResult.length === 0 && item.size_uuid) {
+			const sizeInsertPromise = db
+				.insert(size)
+				.values({
+					uuid: nanoid(15),
+					name: size_uuid,
+					created_by,
+					created_at,
+					updated_at,
+					remarks,
+				})
+				.returning({ insertedUuid: size.uuid });
+			const sizeInsertResult = await sizeInsertPromise;
+			item.size_uuid = sizeInsertResult[0].insertedUuid;
+		} else if (sizeResult.length > 0) {
+			item.size_uuid = sizeResult[0].uuid;
+		}
+
+		// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,
+		const materialPromise = db
+			.select({
+				uuid: material.uuid,
+			})
+			.from(material)
+			.where(
+				and(
+					eq(material.article_uuid, item.article_uuid),
+					eq(material.category_uuid, item.category_uuid),
+					eq(material.name_uuid, item.name_uuid),
+					eq(material.color_uuid, item.color_uuid),
+					eq(material.unit_uuid, item.unit_uuid),
+					eq(material.size_uuid, item.size_uuid)
+				)
+			);
+
+		const materialResult = await materialPromise;
+
+		let material_uuid = new_material_uuid;
+
+		if (materialResult.length === 0) {
+			const materialInsertPromise = db
+				.insert(material)
+				.values({
+					uuid: new_material_uuid,
+					article_uuid,
+					category_uuid,
+					name_uuid,
+					color_uuid,
+					size_uuid,
+					unit_uuid,
+					created_by,
+					created_at,
+					updated_at,
+					remarks,
+				})
+				.returning({ insertedUuid: material.uuid });
+
+			const materialInsertResult = await materialInsertPromise;
+			material_uuid = materialInsertResult[0].insertedUuid;
+		}
+
+		const receive_entry_values = {
+			uuid: item.uuid,
+			receive_uuid: item.receive_uuid,
+			material_uuid:
+				materialResult.length === 0
+					? new_material_uuid
+					: materialResult[0].uuid,
+			quantity,
+			price: item.price,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		};
+	});
+
+	const receive_entryPromise = db
+		.insert(receive_entry)
+		.values(receive_entry_values)
+		.returning({ insertedUuid: receive_entry.uuid });
+
+	try {
+		const data = await receive_entryPromise;
+
+		const materialPromise = db
+			.select({
+				name: material_name.name,
+			})
+			.from(material_name)
+			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
+			.leftJoin(
+				receive_entry,
+				eq(material.uuid, receive_entry.material_uuid)
+			)
+			.where(eq(receive_entry.uuid, data[0].insertedUuid));
+
+		const materialData = await materialPromise;
+
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${materialData[0].name} inserted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
+
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 

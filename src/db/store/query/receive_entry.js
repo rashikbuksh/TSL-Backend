@@ -50,7 +50,7 @@ export async function insert(req, res, next) {
 
 	const articleResult = await articlePromise;
 
-	if (articleResult.length === 0) {
+	if (articleResult.length === 0 && article_uuid) {
 		const articleInsertPromise = db
 			.insert(publicSchema.article)
 			.values({
@@ -79,7 +79,7 @@ export async function insert(req, res, next) {
 
 	const categoryResult = await categoryPromise;
 
-	if (categoryResult.length === 0) {
+	if (categoryResult.length === 0 && category_uuid) {
 		const categoryInsertPromise = db
 			.insert(publicSchema.category)
 			.values({
@@ -106,7 +106,7 @@ export async function insert(req, res, next) {
 
 	const nameResult = await namePromise;
 
-	if (nameResult.length === 0) {
+	if (nameResult.length === 0 && name_uuid) {
 		const nameInsertPromise = db
 			.insert(material_name)
 			.values({
@@ -131,7 +131,7 @@ export async function insert(req, res, next) {
 		.from(color)
 		.where(eq(color.name, color_uuid));
 	const colorResult = await colorPromise;
-	if (colorResult.length === 0) {
+	if (colorResult.length === 0 && color_uuid) {
 		const colorInsertPromise = db
 			.insert(color)
 			.values({
@@ -156,7 +156,7 @@ export async function insert(req, res, next) {
 		.from(unit)
 		.where(eq(unit.name, unit_uuid));
 	const unitResult = await unitPromise;
-	if (unitResult.length === 0) {
+	if (unitResult.length === 0 && unit_uuid) {
 		const unitInsertPromise = db
 			.insert(unit)
 			.values({
@@ -184,7 +184,7 @@ export async function insert(req, res, next) {
 
 	const sizeResult = await sizePromise;
 
-	if (sizeResult.length === 0) {
+	if (sizeResult.length === 0 && size_uuid) {
 		const sizeInsertPromise = db
 			.insert(size)
 			.values({
@@ -326,7 +326,7 @@ export async function update(req, res, next) {
 
 	const articleResult = await articlePromise;
 
-	if (articleResult.length === 0) {
+	if (articleResult.length === 0 && article_uuid) {
 		const articleInsertPromise = db
 			.insert(publicSchema.article)
 			.values({
@@ -355,7 +355,7 @@ export async function update(req, res, next) {
 
 	const categoryResult = await categoryPromise;
 
-	if (categoryResult.length === 0) {
+	if (categoryResult.length === 0 && category_uuid) {
 		const categoryInsertPromise = db
 			.insert(publicSchema.category)
 			.values({
@@ -382,7 +382,7 @@ export async function update(req, res, next) {
 
 	const nameResult = await namePromise;
 
-	if (nameResult.length === 0) {
+	if (nameResult.length === 0 && name_uuid) {
 		const nameInsertPromise = db
 			.insert(material_name)
 			.values({
@@ -407,7 +407,7 @@ export async function update(req, res, next) {
 		.from(color)
 		.where(eq(color.name, color_uuid));
 	const colorResult = await colorPromise;
-	if (colorResult.length === 0) {
+	if (colorResult.length === 0 && color_uuid) {
 		const colorInsertPromise = db
 			.insert(color)
 			.values({
@@ -432,7 +432,7 @@ export async function update(req, res, next) {
 		.from(unit)
 		.where(eq(unit.name, unit_uuid));
 	const unitResult = await unitPromise;
-	if (unitResult.length === 0) {
+	if (unitResult.length === 0 && unit_uuid) {
 		const unitInsertPromise = db
 			.insert(unit)
 			.values({
@@ -460,7 +460,7 @@ export async function update(req, res, next) {
 
 	const sizeResult = await sizePromise;
 
-	if (sizeResult.length === 0) {
+	if (sizeResult.length === 0 && size_uuid) {
 		const sizeInsertPromise = db
 			.insert(size)
 			.values({

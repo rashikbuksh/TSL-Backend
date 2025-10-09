@@ -510,25 +510,23 @@ export async function insertMany(req, res, next) {
 			material_uuid = materialInsertResult[0].insertedUuid;
 		}
 
-		const receive_entry_values = {
-			uuid: item.uuid,
-			receive_uuid: item.receive_uuid,
-			material_uuid:
-				materialResult.length === 0
-					? new_material_uuid
-					: materialResult[0].uuid,
-			quantity,
-			price: item.price,
-			created_by,
-			created_at,
-			updated_at,
-			remarks,
-		};
+		req.body.uuid = item.uuid;
+		req.body.receive_uuid = item.receive_uuid;
+		req.body.material_uuid =
+			materialResult.length === 0
+				? new_material_uuid
+				: materialResult[0].uuid;
+		req.body.quantity = quantity;
+		req.body.price = item.price;
+		req.body.created_by = created_by;
+		req.body.created_at = created_at;
+		req.body.updated_at = updated_at;
+		req.body.remarks = remarks;
 	});
 
 	const receive_entryPromise = db
 		.insert(receive_entry)
-		.values(receive_entry_values)
+		.values(req.body)
 		.returning({ insertedUuid: receive_entry.uuid });
 
 	try {

@@ -320,9 +320,10 @@ export async function insertMany(req, res, next) {
 					uuid: nanoid(15),
 					name: item.article_uuid,
 					buyer_uuid: null,
-					created_by,
-					created_at,
-					updated_at,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
+					remarks: item.remarks,
 				})
 				.returning({ insertedUuid: publicSchema.article.uuid });
 
@@ -348,9 +349,9 @@ export async function insertMany(req, res, next) {
 				.values({
 					uuid: nanoid(15),
 					name: item.category_uuid,
-					created_by,
-					created_at,
-					updated_at,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
 				})
 				.returning({ insertedUuid: publicSchema.category.uuid });
 			const categoryInsertResult = await categoryInsertPromise;
@@ -375,10 +376,10 @@ export async function insertMany(req, res, next) {
 				.values({
 					uuid: nanoid(15),
 					name: item.name_uuid,
-					created_by,
-					created_at,
-					updated_at,
-					remarks,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
+					remarks: item.remarks,
 				})
 				.returning({ insertedUuid: material_name.uuid });
 			const nameInsertResult = await nameInsertPromise;
@@ -401,10 +402,10 @@ export async function insertMany(req, res, next) {
 				.values({
 					uuid: nanoid(15),
 					name: item.color_uuid,
-					created_by,
-					created_at,
-					updated_at,
-					remarks,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
+					remarks: item.remarks,
 				})
 				.returning({ insertedUuid: color.uuid });
 			const colorInsertResult = await colorInsertPromise;
@@ -427,10 +428,10 @@ export async function insertMany(req, res, next) {
 				.values({
 					uuid: nanoid(15),
 					name: item.unit_uuid,
-					created_by,
-					created_at,
-					updated_at,
-					remarks,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
+					remarks: item.remarks,
 				})
 				.returning({ insertedUuid: unit.uuid });
 			const unitInsertResult = await unitInsertPromise;
@@ -455,10 +456,10 @@ export async function insertMany(req, res, next) {
 				.values({
 					uuid: nanoid(15),
 					name: size_uuid,
-					created_by,
-					created_at,
-					updated_at,
-					remarks,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
+					remarks: item.remarks,
 				})
 				.returning({ insertedUuid: size.uuid });
 			const sizeInsertResult = await sizeInsertPromise;
@@ -493,16 +494,16 @@ export async function insertMany(req, res, next) {
 				.insert(material)
 				.values({
 					uuid: new_material_uuid,
-					article_uuid,
-					category_uuid,
-					name_uuid,
-					color_uuid,
-					size_uuid,
-					unit_uuid,
-					created_by,
-					created_at,
-					updated_at,
-					remarks,
+					article_uuid: item.article_uuid,
+					category_uuid: item.category_uuid,
+					name_uuid: item.name_uuid,
+					color_uuid: item.color_uuid,
+					size_uuid: item.size_uuid,
+					unit_uuid: item.unit_uuid,
+					created_by: item.created_by,
+					created_at: item.created_at,
+					updated_at: item.updated_at,
+					remarks: item.remarks,
 				})
 				.returning({ insertedUuid: material.uuid });
 

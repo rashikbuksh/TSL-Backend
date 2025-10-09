@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql, asc } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import {
 	handleError,

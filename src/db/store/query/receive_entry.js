@@ -221,7 +221,7 @@ export async function insert(req, res, next) {
 
 	const materialResult = await materialPromise;
 
-	let material_uuid = new_material_uuid;
+	let material_uuid;
 
 	if (materialResult.length === 0) {
 		const materialInsertPromise = db
@@ -243,15 +243,14 @@ export async function insert(req, res, next) {
 
 		const materialInsertResult = await materialInsertPromise;
 		material_uuid = materialInsertResult[0].insertedUuid;
+	} else {
+		material_uuid = materialResult[0].uuid;
 	}
 
 	const receive_entry_values = {
 		uuid: req.body.uuid,
 		receive_uuid: req.body.receive_uuid,
-		material_uuid:
-			materialResult.length === 0
-				? new_material_uuid
-				: materialResult[0].uuid,
+		material_uuid: material_uuid,
 		quantity,
 		price: req.body.price,
 		created_by,
@@ -300,10 +299,13 @@ export async function insertMany(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	// console.log('req.body', req.body);
-	let new_material_uuid = nanoid(15);
 
-	// check if article_uuid exists if not then insert into article table
-	req.body.forEach(async (item) => {
+	const processedItems = [];
+
+	// Process each item sequentially to avoid UUID conflicts
+	for (const item of req.body) {
+		let new_material_uuid = nanoid(15); // Generate unique UUID for each material
+		// check if article_uuid exists if not then insert into article table
 		const articlePromise = db
 			.select({
 				uuid: publicSchema.article.uuid,
@@ -455,7 +457,7 @@ export async function insertMany(req, res, next) {
 				.insert(size)
 				.values({
 					uuid: nanoid(15),
-					name: size_uuid,
+					name: item.size_uuid, // Fixed: was using size_uuid instead of item.size_uuid
 					created_by: item.created_by,
 					created_at: item.created_at,
 					updated_at: item.updated_at,
@@ -487,9 +489,10 @@ export async function insertMany(req, res, next) {
 
 		const materialResult = await materialPromise;
 
-		let material_uuid = new_material_uuid;
+		let material_uuid;
 
 		if (materialResult.length === 0) {
+			// Generate a unique UUID for this specific material
 			const materialInsertPromise = db
 				.insert(material)
 				.values({
@@ -507,27 +510,46 @@ export async function insertMany(req, res, next) {
 				})
 				.returning({ insertedUuid: material.uuid });
 
-			const materialInsertResult = await materialInsertPromise;
-			material_uuid = materialInsertResult[0].insertedUuid;
+			try {
+				const materialInsertResult = await materialInsertPromise;
+				material_uuid = materialInsertResult[0].insertedUuid;
+			} catch (error) {
+				// If there's a duplicate key error, query for the existing material
+				if (error.code === '23505') {
+					// PostgreSQL unique constraint violation
+					const existingMaterialResult = await materialPromise;
+					if (existingMaterialResult.length > 0) {
+						material_uuid = existingMaterialResult[0].uuid;
+					} else {
+						throw error; // Re-throw if it's not the expected scenario
+					}
+				} else {
+					throw error; // Re-throw for other errors
+				}
+			}
+		} else {
+			material_uuid = materialResult[0].uuid;
 		}
 
-		req.body.uuid = item.uuid;
-		req.body.receive_uuid = item.receive_uuid;
-		req.body.material_uuid =
-			materialResult.length === 0
-				? new_material_uuid
-				: materialResult[0].uuid;
-		req.body.quantity = item.quantity;
-		req.body.price = item.price;
-		req.body.created_by = item.created_by;
-		req.body.created_at = item.created_at;
-		req.body.updated_at = item.updated_at;
-		req.body.remarks = item.remarks;
-	});
+		// Create the processed item for receive_entry
+		const processedItem = {
+			uuid: item.uuid,
+			receive_uuid: item.receive_uuid,
+			material_uuid: material_uuid,
+			quantity: item.quantity,
+			price: item.price,
+			created_by: item.created_by,
+			created_at: item.created_at,
+			updated_at: item.updated_at,
+			remarks: item.remarks,
+		};
+
+		processedItems.push(processedItem);
+	}
 
 	const receive_entryPromise = db
 		.insert(receive_entry)
-		.values(req.body)
+		.values(processedItems)
 		.returning({ insertedUuid: receive_entry.uuid });
 
 	try {
@@ -762,7 +784,7 @@ export async function update(req, res, next) {
 
 	const materialResult = await materialPromise;
 
-	let material_uuid = new_material_uuid;
+	let material_uuid;
 
 	// console.log('materialResult', materialResult);
 	// console.log('materialResult.length', materialResult.length);
@@ -787,14 +809,13 @@ export async function update(req, res, next) {
 
 		const materialInsertResult = await materialInsertPromise;
 		material_uuid = materialInsertResult[0].insertedUuid;
+	} else {
+		material_uuid = materialResult[0].uuid;
 	}
 
 	const receive_entry_values = {
 		receive_uuid: req.body.receive_uuid,
-		material_uuid:
-			materialResult.length === 0
-				? new_material_uuid
-				: materialResult[0].uuid,
+		material_uuid: material_uuid,
 		quantity,
 		price: req.body.price,
 		created_by,

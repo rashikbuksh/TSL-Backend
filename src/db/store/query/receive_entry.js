@@ -38,6 +38,7 @@ export async function insert(req, res, next) {
 		color_uuid,
 		unit_uuid,
 		size_uuid,
+		index,
 	} = req.body;
 
 	// check if article_uuid exists if not then insert into article table
@@ -257,6 +258,7 @@ export async function insert(req, res, next) {
 		created_at,
 		updated_at,
 		remarks,
+		index,
 	};
 
 	const receive_entryPromise = db
@@ -542,6 +544,7 @@ export async function insertMany(req, res, next) {
 			created_at: item.created_at,
 			updated_at: item.updated_at,
 			remarks: item.remarks,
+			index: item.index,
 		};
 
 		processedItems.push(processedItem);
@@ -601,6 +604,7 @@ export async function update(req, res, next) {
 		color_uuid,
 		unit_uuid,
 		size_uuid,
+		index,
 	} = req.body;
 
 	// check if article_uuid exists if not then insert into article table
@@ -822,6 +826,7 @@ export async function update(req, res, next) {
 		created_at,
 		updated_at,
 		remarks,
+		index,
 	};
 
 	// console.log('receive_entry_values', receive_entry_values);
@@ -942,6 +947,7 @@ export async function selectAll(req, res, next) {
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
+			index: receive_entry.index,
 		})
 		.from(receive_entry)
 		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
@@ -1019,6 +1025,7 @@ export async function select(req, res, next) {
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
+			index: receive_entry.index,
 		})
 		.from(receive_entry)
 		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
@@ -1093,6 +1100,7 @@ export async function selectByReceiveUuid(req, res, next) {
 			created_at: receive_entry.created_at,
 			updated_at: receive_entry.updated_at,
 			remarks: receive_entry.remarks,
+			index: receive_entry.index,
 		})
 		.from(receive_entry)
 		.leftJoin(receive, eq(receive_entry.receive_uuid, receive.uuid))
@@ -1119,7 +1127,7 @@ export async function selectByReceiveUuid(req, res, next) {
 			eq(receive_entry.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(receive_entry.receive_uuid, req.params.receive_uuid))
-		.orderBy(desc(receive_entry.created_at));
+		.orderBy(asc(receive_entry.index));
 
 	try {
 		const data = await receive_entryPromise;

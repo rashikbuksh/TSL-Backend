@@ -126,6 +126,7 @@ export const receive_entry = store.table('receive_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	index: integer('index').default(0),
 });
 
 export const material_name = store.table('material_name', {

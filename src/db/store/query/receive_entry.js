@@ -532,24 +532,24 @@ export async function insertMany(req, res, next) {
 	try {
 		const data = await receive_entryPromise;
 
-		const materialPromise = db
-			.select({
-				name: material_name.name,
-			})
-			.from(material_name)
-			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
-			.leftJoin(
-				receive_entry,
-				eq(material.uuid, receive_entry.material_uuid)
-			)
-			.where(eq(receive_entry.uuid, data[0].insertedUuid));
+		// const materialPromise = db
+		// 	.select({
+		// 		name: material_name.name,
+		// 	})
+		// 	.from(material_name)
+		// 	.leftJoin(material, eq(material_name.uuid, material.name_uuid))
+		// 	.leftJoin(
+		// 		receive_entry,
+		// 		eq(material.uuid, receive_entry.material_uuid)
+		// 	)
+		// 	.where(eq(receive_entry.uuid, data[0].insertedUuid));
 
-		const materialData = await materialPromise;
+		// const materialData = await materialPromise;
 
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${materialData[0].name} inserted`,
+			message: `${data.length} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {

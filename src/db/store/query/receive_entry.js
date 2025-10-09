@@ -65,7 +65,7 @@ export async function insert(req, res, next) {
 
 		const articleInsertResult = await articleInsertPromise;
 		article_uuid = articleInsertResult[0].insertedUuid;
-	} else {
+	} else if (articleResult.length > 0) {
 		article_uuid = articleResult[0].uuid;
 	}
 
@@ -341,7 +341,7 @@ export async function update(req, res, next) {
 
 		const articleInsertResult = await articleInsertPromise;
 		article_uuid = articleInsertResult[0].insertedUuid;
-	} else {
+	} else if (articleResult.length > 0) {
 		article_uuid = articleResult[0].uuid;
 	}
 
@@ -368,7 +368,7 @@ export async function update(req, res, next) {
 			.returning({ insertedUuid: publicSchema.category.uuid });
 		const categoryInsertResult = await categoryInsertPromise;
 		category_uuid = categoryInsertResult[0].insertedUuid;
-	} else {
+	} else if (categoryResult.length > 0) {
 		category_uuid = categoryResult[0].uuid;
 	}
 
@@ -396,7 +396,7 @@ export async function update(req, res, next) {
 			.returning({ insertedUuid: material_name.uuid });
 		const nameInsertResult = await nameInsertPromise;
 		name_uuid = nameInsertResult[0].insertedUuid;
-	} else {
+	} else if (nameResult.length > 0) {
 		name_uuid = nameResult[0].uuid;
 	}
 	// check if color_uuid exists if not then insert into color table
@@ -421,7 +421,7 @@ export async function update(req, res, next) {
 			.returning({ insertedUuid: color.uuid });
 		const colorInsertResult = await colorInsertPromise;
 		color_uuid = colorInsertResult[0].insertedUuid;
-	} else {
+	} else if (colorResult.length > 0) {
 		color_uuid = colorResult[0].uuid;
 	}
 	// check if unit_uuid exists if not then insert into unit table
@@ -446,7 +446,7 @@ export async function update(req, res, next) {
 			.returning({ insertedUuid: unit.uuid });
 		const unitInsertResult = await unitInsertPromise;
 		unit_uuid = unitInsertResult[0].insertedUuid;
-	} else {
+	} else if (unitResult.length > 0) {
 		unit_uuid = unitResult[0].uuid;
 	}
 
@@ -474,7 +474,7 @@ export async function update(req, res, next) {
 			.returning({ insertedUuid: size.uuid });
 		const sizeInsertResult = await sizeInsertPromise;
 		size_uuid = sizeInsertResult[0].insertedUuid;
-	} else {
+	} else if (sizeResult.length > 0) {
 		size_uuid = sizeResult[0].uuid;
 	}
 

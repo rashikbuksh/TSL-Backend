@@ -71,6 +71,7 @@ export const defReceive = SED({
 		'convention_rate',
 		'created_by',
 		'created_at',
+		'inventory_date',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -84,6 +85,7 @@ export const defReceive = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		inventory_date: SE.date_time(),
 	},
 	xml: 'Store/Receive',
 });

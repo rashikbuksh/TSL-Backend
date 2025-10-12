@@ -315,7 +315,7 @@ export async function insertMany(req, res, next) {
 			.from(publicSchema.article)
 			.where(eq(publicSchema.article.name, item.article_uuid));
 
-		const articleResult = await articlePromise;
+		const articleResult = (await articlePromise) || null;
 
 		if (articleResult.length === 0 && item.article_uuid) {
 			const articleInsertPromise = db
@@ -345,7 +345,7 @@ export async function insertMany(req, res, next) {
 			.from(publicSchema.category)
 			.where(eq(publicSchema.category.name, item.category_uuid));
 
-		const categoryResult = await categoryPromise;
+		const categoryResult = (await categoryPromise) || null;
 
 		if (categoryResult.length === 0 && item.category_uuid) {
 			const categoryInsertPromise = db
@@ -399,7 +399,7 @@ export async function insertMany(req, res, next) {
 			.from(color)
 			.where(eq(color.name, item.color_uuid));
 
-		const colorResult = await colorPromise;
+		const colorResult = (await colorPromise) || null;
 		if (colorResult.length === 0 && item.color_uuid) {
 			const colorInsertPromise = db
 				.insert(color)
@@ -452,7 +452,7 @@ export async function insertMany(req, res, next) {
 			.from(size)
 			.where(eq(size.name, item.size_uuid));
 
-		const sizeResult = await sizePromise;
+		const sizeResult = (await sizePromise) || null;
 
 		if (sizeResult.length === 0 && item.size_uuid) {
 			const sizeInsertPromise = db

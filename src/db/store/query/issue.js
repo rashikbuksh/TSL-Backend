@@ -20,56 +20,6 @@ import {
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	// Wait for all async operations to complete
-	await Promise.all(
-		req.body.map(async (item) => {
-			// get material_uuid from material_name.name, article.name, category.name, buyer.name, color.name, size.name, unit.name
-			const materialUuid = await db
-				.select({
-					uuid: material.uuid,
-				})
-				.from(material)
-				.leftJoin(
-					material_name,
-					eq(material.name_uuid, material_name.uuid)
-				)
-				.leftJoin(
-					publicSchema.article,
-					eq(material.article_uuid, publicSchema.article.uuid)
-				)
-				.leftJoin(
-					publicSchema.category,
-					eq(material.category_uuid, publicSchema.category.uuid)
-				)
-				.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
-				.leftJoin(color, eq(material.color_uuid, color.uuid))
-				.leftJoin(size, eq(material.size_uuid, size.uuid))
-				.where(
-					and(
-						eq(publicSchema.article.name, item.article),
-						eq(material_name.name, item.material),
-						eq(publicSchema.category.name, item.category),
-						eq(unit.name, item.unit),
-						eq(color.name, item.color),
-						eq(size.name, item.size)
-					)
-				)
-				.limit(1);
-
-			// add a new property material_uuid to item
-			if (materialUuid.length > 0) {
-				item.material_uuid = materialUuid[0].uuid;
-				console.log('Material UUID:', item.material_uuid);
-			} else {
-				throw new Error(
-					`Material not found for item: ${JSON.stringify(item)}`
-				);
-			}
-		})
-	);
-
-	console.log('Request Body:', req.body); // Debugging line to check the request body
-
 	const issuePromise = db
 		.insert(issue)
 		.values(req.body)
@@ -174,7 +124,8 @@ export async function selectAll(req, res, next) {
 			material_name: material_name.name,
 			unit_uuid: material.unit_uuid,
 			unit_name: unit.name,
-			quantity: decimalToNumber(material.quantity),
+			color_name: color.name,
+			size_name: size.name,
 			article_name: publicSchema.article.name,
 			buyer_name: publicSchema.buyer.name,
 			category_name: publicSchema.category.name,
@@ -203,6 +154,8 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
 		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
 		.orderBy(desc(issue.created_at));
 
 	const toast = {
@@ -230,7 +183,8 @@ export async function select(req, res, next) {
 			material_name: material_name.name,
 			unit_uuid: material.unit_uuid,
 			unit_name: unit.name,
-			quantity: decimalToNumber(material.quantity),
+			color_name: color.name,
+			size_name: size.name,
 			article_name: publicSchema.article.name,
 			buyer_name: publicSchema.buyer.name,
 			category_name: publicSchema.category.name,
@@ -259,6 +213,8 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
 		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
 		.where(eq(issue.uuid, req.params.uuid));
 
 	try {

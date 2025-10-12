@@ -21,7 +21,6 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	req.body.map(async (item) => {
-		console.log(item);
 		// get material_uuid from material_name.name, article.name, category.name, buyer.name, color.name, size.name, unit.name
 		const materialUuid = await db
 			.select({
@@ -53,8 +52,9 @@ export async function insert(req, res, next) {
 			.limit(1);
 
 		item.material_uuid = materialUuid[0].uuid;
-		console.log('Material UUID:', item.material_uuid);
 	});
+
+	console.log('Request Body:', req.body); // Debugging line to check the request body
 
 	const issuePromise = db
 		.insert(issue)

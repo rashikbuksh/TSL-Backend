@@ -90,12 +90,37 @@ export const defReceive = SED({
 	xml: 'Store/Receive',
 });
 
+//* ./schema.js#issue_header
+
+export const defIssueHeader = SED({
+	required: ['uuid', 'section', 'issue_date', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		serial_no: SE.integer(),
+		section: SE.string('cutting'),
+		issue_date: SE.date_time(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Store/IssueHeader',
+});
+
 //* ./schema.js#issue
 
 export const defIssue = SED({
-	required: ['uuid', 'material_uuid', 'quantity', 'created_by', 'created_at'],
+	required: [
+		'uuid',
+		'issue_header_uuid',
+		'material_uuid',
+		'quantity',
+		'created_by',
+		'created_at',
+	],
 	properties: {
 		uuid: SE.uuid(),
+		issue_header_uuid: SE.uuid(),
 		material_uuid: SE.uuid(),
 		quantity: SE.number(10),
 		created_by: SE.uuid(),
@@ -190,6 +215,7 @@ export const defStore = {
 	material: defMaterial,
 	vendor: defVendor,
 	receive: defReceive,
+	issue_header: defIssueHeader,
 	issue: defIssue,
 	receive_entry: defReceiveEntry,
 	unit: defUnit,
@@ -212,6 +238,10 @@ export const tagStore = [
 	{
 		name: 'store.receive',
 		description: 'Operations about receive',
+	},
+	{
+		name: 'store.issue_header',
+		description: 'Operations about issue header',
 	},
 	{
 		name: 'store.issue',

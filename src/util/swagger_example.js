@@ -61,6 +61,12 @@ const SE = {
 		items,
 	}),
 
+	file: (example = 'file.pdf') => ({
+		type: 'string',
+		format: 'binary',
+		example,
+	}),
+
 	// * Others
 	xml: (name = '') => ({ name }),
 
@@ -84,13 +90,21 @@ const SE = {
 	parameter_query: (
 		description = 'GET DATA',
 		name = 'uuid',
-		enumVal = ['']
+		enumVal = [''],
+		schemaNeeded = false
 	) => ({
 		name: name,
 		in: 'query',
 		description: description,
 		required: false,
 		type: 'array',
+		schema: schemaNeeded
+			? {
+					type: 'string',
+					enum: enumVal,
+					default: enumVal[0],
+				}
+			: '',
 		items: {
 			type: 'string',
 			enum: enumVal,
@@ -128,6 +142,18 @@ const SE = {
 		return {
 			content: {
 				'application/json': {
+					schema: {
+						$ref: '#/definitions/' + path,
+					},
+				},
+			},
+		};
+	},
+
+	requestBody_file_schema_ref: (path = '') => {
+		return {
+			content: {
+				'multipart/form-data': {
 					schema: {
 						$ref: '#/definitions/' + path,
 					},

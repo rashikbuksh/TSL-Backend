@@ -9,7 +9,7 @@ import * as materialNameOperations from './query/material_name.js';
 import * as unitOperations from './query/unit.js';
 import * as sizeOperations from './query/size.js';
 import * as colorOperations from './query/color.js';
-import store from './schema.js';
+import * as issueHeaderOperations from './query/issue_header.js';
 
 const storeRouter = Router();
 
@@ -45,11 +45,25 @@ storeRouter.get(
 	receiveOperations.selectReceiveEntryDetails
 );
 
+storeRouter.post('/issue-header', issueHeaderOperations.insert);
+storeRouter.put('/issue-header/:uuid', issueHeaderOperations.update);
+storeRouter.delete('/issue-header/:uuid', issueHeaderOperations.remove);
+storeRouter.get('/issue-header', issueHeaderOperations.selectAll);
+storeRouter.get('/issue-header/:uuid', issueHeaderOperations.select);
+storeRouter.get(
+	'/issue-details/by/:issue_header_uuid',
+	issueHeaderOperations.selectIssueDetails
+);
+
 storeRouter.post('/issue', issueOperations.insert);
 storeRouter.put('/issue/:uuid', issueOperations.update);
 storeRouter.delete('/issue/:uuid', issueOperations.remove);
 storeRouter.get('/issue', issueOperations.selectAll);
 storeRouter.get('/issue/:uuid', issueOperations.select);
+storeRouter.get(
+	'/issue/by/:issue_header_uuid',
+	issueOperations.selectByIssueHeader
+);
 
 storeRouter.post('/material-name', materialNameOperations.insert);
 storeRouter.put('/material-name/:uuid', materialNameOperations.update);

@@ -1,8 +1,10 @@
 import {
 	index,
 	integer,
+	pgEnum,
 	pgSchema,
 	pgTable,
+	serial,
 	text,
 	unique,
 } from 'drizzle-orm/pg-core';
@@ -102,8 +104,41 @@ export const receive = store.table('receive', {
 	remarks: text('remarks').default(null),
 });
 
+export const issue_header_enum = pgEnum('issue_header', [
+	'cutting',
+	'sewing',
+	'lasting',
+]);
+
+export const issue_header_sequence = store.sequence(
+	'store_issue_header_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
+export const issue_header = store.table('issue_header', {
+	id: integer('id').default(
+		sql`nextval('store.store_issue_header_sequence')`
+	),
+	serial_no: integer('serial_no').default(0),
+	uuid: uuid_primary,
+	section: issue_header_enum('section').default('cutting'),
+	issue_date: DateTime('issue_date').notNull(),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export const issue = store.table('issue', {
 	uuid: uuid_primary,
+	issue_header_uuid: defaultUUID('issue_header_uuid')
+		.references(() => issue_header.uuid)
+		.default(null),
 	material_uuid: defaultUUID('material_uuid').references(() => material.uuid),
 	quantity: PG_DECIMAL('quantity').notNull(),
 	created_by: defaultUUID('created_by')

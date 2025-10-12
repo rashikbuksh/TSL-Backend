@@ -232,3 +232,65 @@ export async function select(req, res, next) {
 		});
 	}
 }
+
+export async function selectByIssueHeader(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const issuePromise = db
+		.select({
+			uuid: issue.uuid,
+			issue_header_uuid: issue.issue_header_uuid,
+			material_uuid: issue.material_uuid,
+			name_uuid: material.name_uuid,
+			material_name: material_name.name,
+			unit_uuid: material.unit_uuid,
+			unit_name: unit.name,
+			color_name: color.name,
+			size_name: size.name,
+			article_name: publicSchema.article.name,
+			buyer_name: publicSchema.buyer.name,
+			category_name: publicSchema.category.name,
+			quantity: decimalToNumber(issue.quantity),
+			store_quantity: decimalToNumber(material.quantity),
+			created_by: issue.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: issue.created_at,
+			updated_at: issue.updated_at,
+			remarks: issue.remarks,
+		})
+		.from(issue)
+		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
+		.leftJoin(material, eq(issue.material_uuid, material.uuid))
+		.leftJoin(
+			publicSchema.article,
+			eq(material.article_uuid, publicSchema.article.uuid)
+		)
+		.leftJoin(
+			publicSchema.category,
+			eq(material.category_uuid, publicSchema.category.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(publicSchema.article.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+		.leftJoin(color, eq(material.color_uuid, color.uuid))
+		.leftJoin(size, eq(material.size_uuid, size.uuid))
+		.where(eq(issue.uuid, req.params.issue_header_uuid));
+
+	try {
+		const data = await issuePromise;
+		const toast = {
+			status: 200,
+			type: 'select one',
+			message: 'issue details',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}

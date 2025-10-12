@@ -1,4 +1,68 @@
 import SE from '../../../util/swagger_example.js';
+
+const pathIssueHeader = {
+	'/store/issue-header': {
+		get: {
+			tags: ['store.issue_header'],
+			summary: 'Select all Issue Headers',
+			responses: {
+				200: SE.response_schema_ref(200, 'store/issue_header'),
+			},
+		},
+		post: {
+			tags: ['store.issue_header'],
+			summary: 'Insert Issue Header',
+			requestBody: SE.requestBody_schema_ref('store/issue_header'),
+			responses: {
+				201: SE.response_schema_ref(200, 'store/issue_header'),
+			},
+		},
+	},
+	'/store/issue-header/{uuid}': {
+		get: {
+			tags: ['store.issue_header'],
+			summary: 'Select Issue Header',
+			parameters: [SE.parameter_params('uuid', 'string', true)],
+			responses: {
+				200: SE.response_schema_ref(200, 'store/issue_header'),
+			},
+		},
+		put: {
+			tags: ['store.issue_header'],
+			summary: 'Update Issue Header',
+			parameters: [SE.parameter_params('uuid', 'string', true)],
+			requestBody: SE.requestBody_schema_ref('store/issue_header'),
+			responses: {
+				200: SE.response_schema_ref(200, 'store/issue_header'),
+			},
+		},
+		delete: {
+			tags: ['store.issue_header'],
+			summary: 'Delete Issue Header',
+			parameters: [SE.parameter_params('uuid', 'string', true)],
+			responses: {
+				200: SE.response(200),
+			},
+		},
+	},
+	'/store/issue-details/by/{issue_header_uuid}': {
+		get: {
+			tags: ['store.issue_header'],
+			summary: 'Select Issue Header Details',
+			parameters: [
+				SE.parameter_params(
+					'issue_header_uuid',
+					'issue_header_uuid',
+					'string'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'store/issue_header'),
+			},
+		},
+	},
+};
+
 const pathIssue = {
 	'/store/issue': {
 		get: {
@@ -129,6 +193,22 @@ const pathIssue = {
 				200: {
 					description: 'Successful operation',
 				},
+			},
+		},
+	},
+	'/store/issue/by/{issue_header_uuid}': {
+		get: {
+			tags: ['store.issue'],
+			summary: 'Select Issue by Issue Header UUID',
+			parameters: [
+				SE.parameter_params(
+					'issue_header_uuid',
+					'issue_header_uuid',
+					'string'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'store/issue'),
 			},
 		},
 	},
@@ -1181,6 +1261,7 @@ const pathColor = {
 };
 
 export const pathStore = {
+	...pathIssueHeader,
 	...pathIssue,
 	...pathMaterial,
 	...pathReceiveEntry,

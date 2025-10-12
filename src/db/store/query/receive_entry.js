@@ -308,63 +308,129 @@ export async function insertMany(req, res, next) {
 	for (const item of req.body) {
 		let new_material_uuid = nanoid(15); // Generate unique UUID for each material
 		// check if article_uuid exists if not then insert into article table
-		const articlePromise = db
-			.select({
-				uuid: publicSchema.article.uuid,
-			})
-			.from(publicSchema.article)
-			.where(eq(publicSchema.article.name, item.article_uuid));
-
-		const articleResult = await articlePromise;
-
-		if (articleResult.length === 0 && item.article_uuid) {
-			const articleInsertPromise = db
-				.insert(publicSchema.article)
-				.values({
-					uuid: nanoid(15),
-					name: item.article_uuid,
-					buyer_uuid: null,
-					created_by: item.created_by,
-					created_at: item.created_at,
-					updated_at: item.updated_at,
-					remarks: item.remarks,
+		// If article_uuid is empty, null, or undefined, use a default "No Article" UUID
+		if (!item.article_uuid || item.article_uuid.trim() === '') {
+			// First check if "No Article" record exists, if not create it
+			const noArticlePromise = db
+				.select({
+					uuid: publicSchema.article.uuid,
 				})
-				.returning({ insertedUuid: publicSchema.article.uuid });
+				.from(publicSchema.article)
+				.where(eq(publicSchema.article.name, 'No Article'));
 
-			const articleInsertResult = await articleInsertPromise;
-			item.article_uuid = articleInsertResult[0].insertedUuid;
-		} else if (articleResult.length > 0) {
-			item.article_uuid = articleResult[0].uuid || null;
+			const noArticleResult = await noArticlePromise;
+			if (noArticleResult.length === 0) {
+				const noArticleInsertPromise = db
+					.insert(publicSchema.article)
+					.values({
+						uuid: nanoid(15),
+						name: 'No Article',
+						buyer_uuid: null,
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: 'Default no article record',
+					})
+					.returning({ insertedUuid: publicSchema.article.uuid });
+				const noArticleInsertResult = await noArticleInsertPromise;
+				item.article_uuid = noArticleInsertResult[0].insertedUuid;
+			} else {
+				item.article_uuid = noArticleResult[0].uuid;
+			}
+		} else {
+			const articlePromise = db
+				.select({
+					uuid: publicSchema.article.uuid,
+				})
+				.from(publicSchema.article)
+				.where(eq(publicSchema.article.name, item.article_uuid));
+
+			const articleResult = await articlePromise;
+
+			if (articleResult.length === 0 && item.article_uuid) {
+				const articleInsertPromise = db
+					.insert(publicSchema.article)
+					.values({
+						uuid: nanoid(15),
+						name: item.article_uuid,
+						buyer_uuid: null,
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: item.remarks,
+					})
+					.returning({ insertedUuid: publicSchema.article.uuid });
+
+				const articleInsertResult = await articleInsertPromise;
+				item.article_uuid = articleInsertResult[0].insertedUuid;
+			} else if (articleResult.length > 0) {
+				item.article_uuid = articleResult[0].uuid;
+			}
 		}
 
 		// check if category_uuid exists if not then insert into category table
-		const categoryPromise = db
-			.select({
-				uuid: publicSchema.category.uuid,
-			})
-			.from(publicSchema.category)
-			.where(eq(publicSchema.category.name, item.category_uuid));
-
-		const categoryResult = await categoryPromise;
-
-		if (categoryResult.length === 0 && item.category_uuid) {
-			const categoryInsertPromise = db
-				.insert(publicSchema.category)
-				.values({
-					uuid: nanoid(15),
-					name: item.category_uuid,
-					created_by: item.created_by,
-					created_at: item.created_at,
-					updated_at: item.updated_at,
+		// If category_uuid is empty, null, or undefined, use a default "No Category" UUID
+		if (!item.category_uuid || item.category_uuid.trim() === '') {
+			// First check if "No Category" record exists, if not create it
+			const noCategoryPromise = db
+				.select({
+					uuid: publicSchema.category.uuid,
 				})
-				.returning({ insertedUuid: publicSchema.category.uuid });
-			const categoryInsertResult = await categoryInsertPromise;
-			item.category_uuid = categoryInsertResult[0].insertedUuid;
-		} else if (categoryResult.length > 0) {
-			item.category_uuid = categoryResult[0].uuid || null;
+				.from(publicSchema.category)
+				.where(eq(publicSchema.category.name, 'No Category'));
+
+			const noCategoryResult = await noCategoryPromise;
+			if (noCategoryResult.length === 0) {
+				const noCategoryInsertPromise = db
+					.insert(publicSchema.category)
+					.values({
+						uuid: nanoid(15),
+						name: 'No Category',
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: 'Default no category record',
+					})
+					.returning({ insertedUuid: publicSchema.category.uuid });
+				const noCategoryInsertResult = await noCategoryInsertPromise;
+				item.category_uuid = noCategoryInsertResult[0].insertedUuid;
+			} else {
+				item.category_uuid = noCategoryResult[0].uuid;
+			}
+		} else {
+			const categoryPromise = db
+				.select({
+					uuid: publicSchema.category.uuid,
+				})
+				.from(publicSchema.category)
+				.where(eq(publicSchema.category.name, item.category_uuid));
+
+			const categoryResult = await categoryPromise;
+
+			if (categoryResult.length === 0 && item.category_uuid) {
+				const categoryInsertPromise = db
+					.insert(publicSchema.category)
+					.values({
+						uuid: nanoid(15),
+						name: item.category_uuid,
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+					})
+					.returning({ insertedUuid: publicSchema.category.uuid });
+				const categoryInsertResult = await categoryInsertPromise;
+				item.category_uuid = categoryInsertResult[0].insertedUuid;
+			} else if (categoryResult.length > 0) {
+				item.category_uuid = categoryResult[0].uuid;
+			}
 		}
 
 		// check if name_uuid exists if not then insert into material_name table
+		// Material name is required - throw error if not provided
+		if (!item.name_uuid || item.name_uuid.trim() === '') {
+			throw new Error('Material name is required and cannot be empty');
+		}
+
 		const namePromise = db
 			.select({
 				uuid: material_name.uuid,
@@ -392,84 +458,174 @@ export async function insertMany(req, res, next) {
 			item.name_uuid = nameResult[0].uuid;
 		}
 		// check if color_uuid exists if not then insert into color table
-		const colorPromise = db
-			.select({
-				uuid: color.uuid,
-			})
-			.from(color)
-			.where(eq(color.name, item.color_uuid));
-
-		const colorResult = await colorPromise;
-		if (colorResult.length === 0 && item.color_uuid) {
-			const colorInsertPromise = db
-				.insert(color)
-				.values({
-					uuid: nanoid(15),
-					name: item.color_uuid,
-					created_by: item.created_by,
-					created_at: item.created_at,
-					updated_at: item.updated_at,
-					remarks: item.remarks,
+		// If color_uuid is empty, null, or undefined, use a default "No Color" UUID
+		if (!item.color_uuid || item.color_uuid.trim() === '') {
+			// First check if "No Color" record exists, if not create it
+			const noColorPromise = db
+				.select({
+					uuid: color.uuid,
 				})
-				.returning({ insertedUuid: color.uuid });
-			const colorInsertResult = await colorInsertPromise;
-			item.color_uuid = colorInsertResult[0].insertedUuid;
-		} else if (colorResult.length > 0) {
-			item.color_uuid = colorResult[0].uuid || null;
+				.from(color)
+				.where(eq(color.name, 'No Color'));
+
+			const noColorResult = await noColorPromise;
+			if (noColorResult.length === 0) {
+				const noColorInsertPromise = db
+					.insert(color)
+					.values({
+						uuid: nanoid(15),
+						name: 'No Color',
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: 'Default no color record',
+					})
+					.returning({ insertedUuid: color.uuid });
+				const noColorInsertResult = await noColorInsertPromise;
+				item.color_uuid = noColorInsertResult[0].insertedUuid;
+			} else {
+				item.color_uuid = noColorResult[0].uuid;
+			}
+		} else {
+			const colorPromise = db
+				.select({
+					uuid: color.uuid,
+				})
+				.from(color)
+				.where(eq(color.name, item.color_uuid));
+
+			const colorResult = await colorPromise;
+			if (colorResult.length === 0 && item.color_uuid) {
+				const colorInsertPromise = db
+					.insert(color)
+					.values({
+						uuid: nanoid(15),
+						name: item.color_uuid,
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: item.remarks,
+					})
+					.returning({ insertedUuid: color.uuid });
+				const colorInsertResult = await colorInsertPromise;
+				item.color_uuid = colorInsertResult[0].insertedUuid;
+			} else if (colorResult.length > 0) {
+				item.color_uuid = colorResult[0].uuid;
+			}
 		}
 		// check if unit_uuid exists if not then insert into unit table
-		const unitPromise = db
-			.select({
-				uuid: unit.uuid,
-			})
-			.from(unit)
-			.where(eq(unit.name, item.unit_uuid));
-
-		const unitResult = await unitPromise;
-		if (unitResult.length === 0 && item.unit_uuid) {
-			const unitInsertPromise = db
-				.insert(unit)
-				.values({
-					uuid: nanoid(15),
-					name: item.unit_uuid,
-					created_by: item.created_by,
-					created_at: item.created_at,
-					updated_at: item.updated_at,
-					remarks: item.remarks,
+		// If unit_uuid is empty, null, or undefined, use a default "No Unit" UUID
+		if (!item.unit_uuid || item.unit_uuid.trim() === '') {
+			// First check if "No Unit" record exists, if not create it
+			const noUnitPromise = db
+				.select({
+					uuid: unit.uuid,
 				})
-				.returning({ insertedUuid: unit.uuid });
-			const unitInsertResult = await unitInsertPromise;
-			item.unit_uuid = unitInsertResult[0].insertedUuid;
-		} else if (unitResult.length > 0) {
-			item.unit_uuid = unitResult[0].uuid;
+				.from(unit)
+				.where(eq(unit.name, 'No Unit'));
+
+			const noUnitResult = await noUnitPromise;
+			if (noUnitResult.length === 0) {
+				const noUnitInsertPromise = db
+					.insert(unit)
+					.values({
+						uuid: nanoid(15),
+						name: 'No Unit',
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: 'Default no unit record',
+					})
+					.returning({ insertedUuid: unit.uuid });
+				const noUnitInsertResult = await noUnitInsertPromise;
+				item.unit_uuid = noUnitInsertResult[0].insertedUuid;
+			} else {
+				item.unit_uuid = noUnitResult[0].uuid;
+			}
+		} else {
+			const unitPromise = db
+				.select({
+					uuid: unit.uuid,
+				})
+				.from(unit)
+				.where(eq(unit.name, item.unit_uuid));
+
+			const unitResult = await unitPromise;
+			if (unitResult.length === 0 && item.unit_uuid) {
+				const unitInsertPromise = db
+					.insert(unit)
+					.values({
+						uuid: nanoid(15),
+						name: item.unit_uuid,
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: item.remarks,
+					})
+					.returning({ insertedUuid: unit.uuid });
+				const unitInsertResult = await unitInsertPromise;
+				item.unit_uuid = unitInsertResult[0].insertedUuid;
+			} else if (unitResult.length > 0) {
+				item.unit_uuid = unitResult[0].uuid;
+			}
 		}
 
 		// check if size_uuid exists if not then insert into size table
-		const sizePromise = db
-			.select({
-				uuid: size.uuid,
-			})
-			.from(size)
-			.where(eq(size.name, item.size_uuid));
-
-		const sizeResult = await sizePromise;
-
-		if (sizeResult.length === 0 && item.size_uuid) {
-			const sizeInsertPromise = db
-				.insert(size)
-				.values({
-					uuid: nanoid(15),
-					name: item.size_uuid, // Fixed: was using size_uuid instead of item.size_uuid
-					created_by: item.created_by,
-					created_at: item.created_at,
-					updated_at: item.updated_at,
-					remarks: item.remarks,
+		// If size_uuid is empty, null, or undefined, use a default "No Size" UUID
+		if (!item.size_uuid || item.size_uuid.trim() === '') {
+			// First check if "No Size" record exists, if not create it
+			const noSizePromise = db
+				.select({
+					uuid: size.uuid,
 				})
-				.returning({ insertedUuid: size.uuid });
-			const sizeInsertResult = await sizeInsertPromise;
-			item.size_uuid = sizeInsertResult[0].insertedUuid;
-		} else if (sizeResult.length > 0) {
-			item.size_uuid = sizeResult[0].uuid || null;
+				.from(size)
+				.where(eq(size.name, 'No Size'));
+
+			const noSizeResult = await noSizePromise;
+			if (noSizeResult.length === 0) {
+				const noSizeInsertPromise = db
+					.insert(size)
+					.values({
+						uuid: nanoid(15),
+						name: 'No Size',
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: 'Default no size record',
+					})
+					.returning({ insertedUuid: size.uuid });
+				const noSizeInsertResult = await noSizeInsertPromise;
+				item.size_uuid = noSizeInsertResult[0].insertedUuid;
+			} else {
+				item.size_uuid = noSizeResult[0].uuid;
+			}
+		} else {
+			const sizePromise = db
+				.select({
+					uuid: size.uuid,
+				})
+				.from(size)
+				.where(eq(size.name, item.size_uuid));
+
+			const sizeResult = await sizePromise;
+
+			if (sizeResult.length === 0 && item.size_uuid) {
+				const sizeInsertPromise = db
+					.insert(size)
+					.values({
+						uuid: nanoid(15),
+						name: item.size_uuid,
+						created_by: item.created_by,
+						created_at: item.created_at,
+						updated_at: item.updated_at,
+						remarks: item.remarks,
+					})
+					.returning({ insertedUuid: size.uuid });
+				const sizeInsertResult = await sizeInsertPromise;
+				item.size_uuid = sizeInsertResult[0].insertedUuid;
+			} else if (sizeResult.length > 0) {
+				item.size_uuid = sizeResult[0].uuid;
+			}
 		}
 
 		// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,

@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -8,10 +8,51 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { issue, material, material_name, unit } from '../schema.js';
+import {
+	issue,
+	material,
+	material_name,
+	unit,
+	color,
+	size,
+} from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	req.body.map(async (item) => {
+		// get material_uuid from material_name.name, article.name, category.name, buyer.name, color.name, size.name, unit.name
+		const materialUuid = await db
+			.select({
+				uuid: material.uuid,
+			})
+			.from(material)
+			.leftJoin(material_name, eq(material.name_uuid, material_name.uuid))
+			.leftJoin(
+				publicSchema.article,
+				eq(material.article_uuid, publicSchema.article.uuid)
+			)
+			.leftJoin(
+				publicSchema.category,
+				eq(material.category_uuid, publicSchema.category.uuid)
+			)
+			.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
+			.leftJoin(color, eq(material.color_uuid, color.uuid))
+			.leftJoin(size, eq(material.size_uuid, size.uuid))
+			.where(
+				and(
+					eq(publicSchema.article.name, item.article),
+					eq(material_name.name, item.material),
+					eq(publicSchema.category.name, item.category),
+					eq(unit.name, item.unit),
+					eq(color.name, item.color),
+					eq(size.name, item.size)
+				)
+			)
+			.limit(1);
+
+		item.material_uuid = materialUuid[0].uuid;
+	});
 
 	const issuePromise = db
 		.insert(issue)

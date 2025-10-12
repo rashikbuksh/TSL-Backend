@@ -20,19 +20,10 @@ export async function insert(req, res, next) {
 
 	try {
 		const data = await issuePromise;
-		const materialPromise = db
-			.select({
-				name: material_name.name,
-			})
-			.from(material_name)
-			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
-			.leftJoin(issue, eq(material.uuid, issue.material_uuid))
-			.where(eq(issue.uuid, data[0].insertedUuid));
-		const materialData = await materialPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${materialData[0].name} issued`,
+			message: `${data.length} issued inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {

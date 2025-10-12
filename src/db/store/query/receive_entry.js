@@ -315,7 +315,7 @@ export async function insertMany(req, res, next) {
 			.from(publicSchema.article)
 			.where(eq(publicSchema.article.name, item.article_uuid));
 
-		const articleResult = (await articlePromise) || null;
+		const articleResult = await articlePromise;
 
 		if (articleResult.length === 0 && item.article_uuid) {
 			const articleInsertPromise = db
@@ -334,7 +334,7 @@ export async function insertMany(req, res, next) {
 			const articleInsertResult = await articleInsertPromise;
 			item.article_uuid = articleInsertResult[0].insertedUuid;
 		} else if (articleResult.length > 0) {
-			item.article_uuid = articleResult[0].uuid;
+			item.article_uuid = articleResult[0].uuid || null;
 		}
 
 		// check if category_uuid exists if not then insert into category table
@@ -345,7 +345,7 @@ export async function insertMany(req, res, next) {
 			.from(publicSchema.category)
 			.where(eq(publicSchema.category.name, item.category_uuid));
 
-		const categoryResult = (await categoryPromise) || null;
+		const categoryResult = await categoryPromise;
 
 		if (categoryResult.length === 0 && item.category_uuid) {
 			const categoryInsertPromise = db
@@ -361,7 +361,7 @@ export async function insertMany(req, res, next) {
 			const categoryInsertResult = await categoryInsertPromise;
 			item.category_uuid = categoryInsertResult[0].insertedUuid;
 		} else if (categoryResult.length > 0) {
-			item.category_uuid = categoryResult[0].uuid;
+			item.category_uuid = categoryResult[0].uuid || null;
 		}
 
 		// check if name_uuid exists if not then insert into material_name table
@@ -399,7 +399,7 @@ export async function insertMany(req, res, next) {
 			.from(color)
 			.where(eq(color.name, item.color_uuid));
 
-		const colorResult = (await colorPromise) || null;
+		const colorResult = await colorPromise;
 		if (colorResult.length === 0 && item.color_uuid) {
 			const colorInsertPromise = db
 				.insert(color)
@@ -415,7 +415,7 @@ export async function insertMany(req, res, next) {
 			const colorInsertResult = await colorInsertPromise;
 			item.color_uuid = colorInsertResult[0].insertedUuid;
 		} else if (colorResult.length > 0) {
-			item.color_uuid = colorResult[0].uuid;
+			item.color_uuid = colorResult[0].uuid || null;
 		}
 		// check if unit_uuid exists if not then insert into unit table
 		const unitPromise = db
@@ -452,7 +452,7 @@ export async function insertMany(req, res, next) {
 			.from(size)
 			.where(eq(size.name, item.size_uuid));
 
-		const sizeResult = (await sizePromise) || null;
+		const sizeResult = await sizePromise;
 
 		if (sizeResult.length === 0 && item.size_uuid) {
 			const sizeInsertPromise = db
@@ -469,7 +469,7 @@ export async function insertMany(req, res, next) {
 			const sizeInsertResult = await sizeInsertPromise;
 			item.size_uuid = sizeInsertResult[0].insertedUuid;
 		} else if (sizeResult.length > 0) {
-			item.size_uuid = sizeResult[0].uuid;
+			item.size_uuid = sizeResult[0].uuid || null;
 		}
 
 		// check if material exists with these parameters article_uuid, category_uuid, name_uuid, color_uuid, unit_uuid, size_uuid,

@@ -108,6 +108,7 @@ export const issue_header_enum = pgEnum('issue_header', [
 	'cutting',
 	'sewing',
 	'lasting',
+	'none',
 ]);
 
 export const issue_header_sequence = store.sequence(
@@ -124,8 +125,8 @@ export const issue_header = store.table('issue_header', {
 	),
 	serial_no: text('serial_no').default(null),
 	uuid: uuid_primary,
-	section: issue_header_enum('section').default('cutting'),
-	issue_date: DateTime('issue_date').notNull(),
+	section: issue_header_enum('section').default('none'),
+	issue_date: DateTime('issue_date').default(null),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.notNull(),

@@ -122,7 +122,7 @@ export const issue_header = store.table('issue_header', {
 	id: integer('id').default(
 		sql`nextval('store.store_issue_header_sequence')`
 	),
-	serial_no: integer('serial_no').default(0),
+	serial_no: text('serial_no').default(null),
 	uuid: uuid_primary,
 	section: issue_header_enum('section').default('cutting'),
 	issue_date: DateTime('issue_date').notNull(),

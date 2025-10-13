@@ -96,7 +96,7 @@ export const defIssueHeader = SED({
 	required: ['uuid', 'section', 'issue_date', 'created_by', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
-		serial_no: SE.integer(),
+		serial_no: SE.string('SN-001'),
 		section: SE.string('cutting'),
 		issue_date: SE.date_time(),
 		created_by: SE.uuid(),

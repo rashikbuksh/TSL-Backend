@@ -277,7 +277,7 @@ export async function selectByIssueHeader(req, res, next) {
 		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
 		.leftJoin(color, eq(material.color_uuid, color.uuid))
 		.leftJoin(size, eq(material.size_uuid, size.uuid))
-		.where(eq(issue.uuid, req.params.issue_header_uuid));
+		.where(eq(issue.issue_header_uuid, req.params.issue_header_uuid));
 
 	try {
 		const data = await issuePromise;

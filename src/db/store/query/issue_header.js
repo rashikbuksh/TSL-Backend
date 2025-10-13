@@ -205,7 +205,7 @@ export async function selectIssueDetails(req, res, next) {
 
 		const response = {
 			...issue_header?.data?.data,
-			issue: issue?.data?.data || [],
+			bulk_entry: issue?.data?.data || [],
 		};
 
 		const toast = {

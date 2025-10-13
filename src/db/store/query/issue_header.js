@@ -158,7 +158,7 @@ export async function select(req, res, next) {
 			issue_count: decimalToNumber(sql`(
 				select count(*)
 				from store.issue
-				where store.issue.header_uuid = issue_header.uuid
+				where store.issue.issue_header_uuid = issue_header.uuid
 			)`),
 			issue_date: issue_header.issue_date,
 		})

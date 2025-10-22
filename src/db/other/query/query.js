@@ -135,11 +135,32 @@ export async function selectMaterial(req, res, next) {
 		select
 			m.uuid as value,
 			concat('M', to_char(m.created_at, 'YY'), '-', (m.id::text), ' - ', mn.name) as label,
-			m.quantity as max_quantity
+			m.quantity::float8 as max_quantity,
+			mn.name as material_name,
+			a.name as article_name,
+			b.name as buyer_name,
+			c.name as category_name,
+			u.name as unit_name,
+			col.name as color_name,
+			s.name as size_name
 		from
 			store.material m
 		LEFT JOIN 
 			store.material_name mn ON m.name_uuid = mn.uuid
+		LEFT JOIN
+			public.article a ON m.article_uuid = a.uuid
+		LEFT JOIN
+			public.buyer b ON a.buyer_uuid = b.uuid
+		LEFT JOIN
+			public.category c ON m.category_uuid = c.uuid
+		LEFT JOIN 
+			store.unit u ON m.unit_uuid = u.uuid
+		LEFT JOIN
+			store.color col ON m.color_uuid = col.uuid
+		LEFT JOIN
+			store.size s ON m.size_uuid = s.uuid
+		order by
+			m.created_at desc
 	`;
 
 	const materialPromise = db.execute(query);

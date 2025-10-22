@@ -28,6 +28,10 @@ storeRouter.get(
 	'/receive-entry/by/:receive_uuid',
 	receive_entryOperations.selectByReceiveUuid
 );
+storeRouter.put(
+	'/receive-entry/for/receive-log/:uuid',
+	receive_entryOperations.updateForReceiveEntryLog
+);
 
 storeRouter.post('/vendor', vendorOperations.insert);
 storeRouter.put('/vendor/:uuid', vendorOperations.update);

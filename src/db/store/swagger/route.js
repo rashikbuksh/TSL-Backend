@@ -513,6 +513,17 @@ const pathReceiveEntry = {
 			},
 		},
 	},
+	'/store/receive-entry/for/receive-log/{uuid}': {
+		put: {
+			tags: ['store.receive_entry'],
+			summary: 'Update Receive Entry for Receive Log',
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
+			requestBody: SE.requestBody_schema_ref('store/receive_entry'),
+			responses: {
+				200: SE.response_schema_ref(200, 'store/receive_entry'),
+			},
+		},
+	},
 };
 
 const pathReceive = {

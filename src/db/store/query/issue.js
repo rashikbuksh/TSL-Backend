@@ -120,6 +120,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: issue.uuid,
 			material_uuid: issue.material_uuid,
+			material_id: sql`concat('M', to_char(material.created_at, 'YY'), '-', (material.id::text))`,
 			name_uuid: material.name_uuid,
 			material_name: material_name.name,
 			unit_uuid: material.unit_uuid,
@@ -179,6 +180,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: issue.uuid,
 			material_uuid: issue.material_uuid,
+			material_id: sql`concat('M', to_char(material.created_at, 'YY'), '-', (material.id::text))`,
 			name_uuid: material.name_uuid,
 			material_name: material_name.name,
 			unit_uuid: material.unit_uuid,
@@ -241,6 +243,7 @@ export async function selectByIssueHeader(req, res, next) {
 			uuid: issue.uuid,
 			issue_header_uuid: issue.issue_header_uuid,
 			material_uuid: issue.material_uuid,
+			material_id: sql`concat('M', to_char(material.created_at, 'YY'), '-', (material.id::text))`,
 			name_uuid: material.name_uuid,
 			material_name: material_name.name,
 			unit_uuid: material.unit_uuid,

@@ -30,8 +30,9 @@ export const material_sequence = store.sequence('store_material_sequence', {
 export const material = store.table(
 	'material',
 	{
-		id: integer('id')
-			.default(sql`nextval('store.store_material_sequence')`),
+		id: integer('id').default(
+			sql`nextval('store.store_material_sequence')`
+		),
 		uuid: uuid_primary,
 		article_uuid: defaultUUID('article_uuid').references(
 			() => publicSchema.article.uuid
@@ -155,6 +156,7 @@ export const issue = store.table('issue', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	index: integer('index').default(0),
 });
 
 export const receive_entry = store.table('receive_entry', {

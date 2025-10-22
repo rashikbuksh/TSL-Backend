@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -9,12 +9,12 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import {
+	color,
 	issue,
 	material,
 	material_name,
-	unit,
-	color,
 	size,
+	unit,
 } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -283,7 +283,8 @@ export async function selectByIssueHeader(req, res, next) {
 		.leftJoin(unit, eq(material.unit_uuid, unit.uuid))
 		.leftJoin(color, eq(material.color_uuid, color.uuid))
 		.leftJoin(size, eq(material.size_uuid, size.uuid))
-		.where(eq(issue.issue_header_uuid, req.params.issue_header_uuid));
+		.where(eq(issue.issue_header_uuid, req.params.issue_header_uuid))
+		.orderBy(asc(issue.index));
 
 	try {
 		const data = await issuePromise;

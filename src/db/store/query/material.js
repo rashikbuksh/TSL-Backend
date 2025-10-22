@@ -27,11 +27,12 @@ export async function insert(req, res, next) {
 			.from(material_name)
 			.leftJoin(material, eq(material_name.uuid, material.name_uuid))
 			.where(eq(material.uuid, data[0].insertedUuid));
+
 		const materialData = await materialPromised;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${materialData[0].name} inserted`,
+			message: `${materialData[0].name} - ${materialData[0].id} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -110,6 +111,8 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const materialPromise = db
 		.select({
+			id: material.id,
+			material_id: sql`concat('M', to_char(material.created_at, 'YY'), '-', (material.id::text))`,
 			uuid: material.uuid,
 			article_uuid: material.article_uuid,
 			article_name: publicSchema.article.name,
@@ -168,6 +171,8 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	const materialPromise = db
 		.select({
+			id: material.id,
+			material_id: sql`concat('M', to_char(material.created_at, 'YY'), '-', (material.id::text))`,
 			uuid: material.uuid,
 			article_uuid: material.article_uuid,
 			article_name: publicSchema.article.name,

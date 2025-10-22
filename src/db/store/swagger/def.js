@@ -16,6 +16,7 @@ export const defMaterial = SED({
 		'created_at',
 	],
 	properties: {
+		id: SE.number(1),
 		uuid: SE.uuid(),
 		article_uuid: SE.uuid(),
 		category_uuid: SE.uuid(),

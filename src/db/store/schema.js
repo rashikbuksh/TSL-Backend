@@ -22,9 +22,16 @@ import * as publicSchema from '../public/schema.js';
 
 const store = pgSchema('store');
 
+export const material_sequence = store.sequence('store_material_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const material = store.table(
 	'material',
 	{
+		id: integer('id')
+			.default(sql`nextval('store.store_material_sequence')`),
 		uuid: uuid_primary,
 		article_uuid: defaultUUID('article_uuid').references(
 			() => publicSchema.article.uuid

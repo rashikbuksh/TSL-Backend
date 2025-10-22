@@ -1,10 +1,5 @@
-import { and, eq, min, sql, sum } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { eq, sql } from 'drizzle-orm';
+import { handleError, handleResponse } from '../../../util/index.js';
 
 import db from '../../index.js';
 

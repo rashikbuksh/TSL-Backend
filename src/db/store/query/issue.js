@@ -137,6 +137,7 @@ export async function selectAll(req, res, next) {
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,
+			index: issue.index,
 		})
 		.from(issue)
 		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
@@ -197,6 +198,7 @@ export async function select(req, res, next) {
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,
+			index: issue.index,
 		})
 		.from(issue)
 		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
@@ -260,6 +262,7 @@ export async function selectByIssueHeader(req, res, next) {
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,
+			index: issue.index,
 		})
 		.from(issue)
 		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))

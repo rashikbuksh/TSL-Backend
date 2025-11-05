@@ -1,3 +1,5 @@
+DROP FUNCTION store.store_material_report_function;
+
 CREATE OR REPLACE FUNCTION store.store_material_report_function(IN start_date timestamp, IN end_date timestamp)
 RETURNS TABLE (
     material_uuid text,
@@ -11,11 +13,13 @@ RETURNS TABLE (
     opening_quantity_total_price_bdt float,
     opening_quantity_rate_usd float,
     opening_quantity_rate_bdt float,
+    opening_quantity_avg_conversion_rate float,
     purchased_quantity float,
     purchased_quantity_total_price_usd float,
     purchased_quantity_total_price_bdt float,
     purchased_quantity_rate_usd float,
     purchased_quantity_rate_bdt float,
+    purchased_quantity_avg_conversion_rate float,
     sub_total_quantity float,
     sub_total_quantity_total_price_usd float,
     sub_total_quantity_total_price_bdt float,
@@ -41,7 +45,8 @@ BEGIN
             re.material_uuid,
             ROUND(SUM(coalesce(re.quantity, 0)), 4)::float8 AS op_quantity,
             ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0)), 4)::float8 AS op_quantity_total_price_usd,
-            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0) * r.convention_rate), 4)::float8 as op_quantity_total_price_bdt
+            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0) * r.convention_rate), 4)::float8 as op_quantity_total_price_bdt,
+            AVG(r.convention_rate)::float8 AS avg_conversion_rate
         FROM store.receive_entry re
         LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
         WHERE
@@ -66,7 +71,8 @@ BEGIN
             re.material_uuid,
             ROUND(SUM(coalesce(re.quantity, 0)), 4)::float8 AS cp_quantity,
             ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0)), 4)::float8 AS cp_quantity_total_price_usd,
-            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0) * r.convention_rate), 4)::float8 as cp_quantity_total_price_bdt
+            ROUND(SUM(coalesce(re.quantity, 0) * coalesce(re.price, 0) * r.convention_rate), 4)::float8 as cp_quantity_total_price_bdt,
+            AVG(r.convention_rate)::float8 AS avg_conversion_rate
         FROM store.receive_entry re
         LEFT JOIN store.receive r ON re.receive_uuid = r.uuid
         WHERE
@@ -99,9 +105,11 @@ BEGIN
             (coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity)) AS opening_quantity_total_price_usd,
             coalesce(coalesce(op.op_quantity_total_price_bdt, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) *
             (coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity)) AS opening_quantity_total_price_bdt,
+            coalesce(op.avg_conversion_rate, 0) AS opening_quantity_avg_conversion_rate,
             coalesce(cp.cp_quantity, 0) AS purchased_quantity,
             coalesce(cp.cp_quantity_total_price_usd, 0) AS purchased_quantity_total_price_usd,
             coalesce(cp.cp_quantity_total_price_bdt, 0) AS purchased_quantity_total_price_bdt,
+            coalesce(cp.avg_conversion_rate, 0) AS purchased_quantity_avg_conversion_rate,
             coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity, 0) + coalesce(cp.cp_quantity, 0) AS sub_total_quantity,
             coalesce(cp.cp_quantity_total_price_usd, 0) + coalesce(coalesce(op.op_quantity_total_price_usd, 0) / NULLIF(coalesce(op.op_quantity, 0), 0),0) * 
             coalesce(coalesce(op.op_quantity, 0) - coalesce(oc.oc_quantity),0) AS sub_total_quantity_total_price_usd,
@@ -134,11 +142,13 @@ BEGIN
         coalesce(sub_totals.opening_quantity_total_price_bdt / NULLIF(sub_totals.opening_quantity, 0) * sub_totals.opening_quantity,0)::float8 AS opening_quantity_total_price_bdt,
         coalesce(sub_totals.opening_quantity_total_price_usd / NULLIF(sub_totals.opening_quantity, 0),0)::float8 AS opening_quantity_rate_usd,
         coalesce(sub_totals.opening_quantity_total_price_bdt / NULLIF(sub_totals.opening_quantity, 0),0)::float8 AS opening_quantity_rate_bdt,
+        sub_totals.opening_quantity_avg_conversion_rate::float8 AS opening_quantity_avg_conversion_rate,
         sub_totals.purchased_quantity::float8 AS purchased_quantity,
         sub_totals.purchased_quantity_total_price_usd::float8 AS purchased_quantity_total_price_usd,
         sub_totals.purchased_quantity_total_price_bdt::float8 AS purchased_quantity_total_price_bdt,
         coalesce(sub_totals.purchased_quantity_total_price_usd / NULLIF(sub_totals.purchased_quantity, 0),0)::float8 AS purchased_quantity_rate_usd,
         coalesce(sub_totals.purchased_quantity_total_price_bdt / NULLIF(sub_totals.purchased_quantity, 0),0)::float8 AS purchased_quantity_rate_bdt,
+        sub_totals.purchased_quantity_avg_conversion_rate::float8 AS purchased_quantity_avg_conversion_rate,
         sub_totals.sub_total_quantity::float8 AS sub_total_quantity,
         sub_totals.sub_total_quantity_total_price_usd::float8 AS sub_total_quantity_total_price_usd,
         sub_totals.sub_total_quantity_total_price_bdt::float8 AS sub_total_quantity_total_price_bdt,

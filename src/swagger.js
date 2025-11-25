@@ -7,6 +7,9 @@ import { pathHr } from './db/hr/swagger/route.js';
 // Commercial
 import { defCommercial, tagCommercial } from './db/commercial/swagger/def.js';
 import { pathCommercial } from './db/commercial/swagger/route.js';
+// Acc
+import { defAcc, tagAcc } from './db/acc/swagger/def.js';
+import { pathAcc } from './db/acc/swagger/route.js';
 // Store
 import { defStore, tagStore } from './db/store/swagger/def.js';
 import { pathStore } from './db/store/swagger/route.js';
@@ -23,6 +26,7 @@ import { pathReport, tagReport } from './db/report/route.js';
 const tags = [
 	...tagHr,
 	...tagCommercial,
+	...tagAcc,
 	...tagStore,
 	...tagPublic,
 	...tagOther,
@@ -32,6 +36,7 @@ const tags = [
 const definitions = {
 	hr: defHr,
 	commercial: defCommercial,
+	acc: defAcc,
 	store: defStore,
 	public: defPublic,
 };
@@ -39,6 +44,7 @@ const definitions = {
 const paths = {
 	...pathHr,
 	...pathCommercial,
+	...pathAcc,
 	...pathStore,
 	...pathPublic,
 	...pathOther,

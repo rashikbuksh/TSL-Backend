@@ -6,6 +6,7 @@ import { storeRouter } from '../db/store/route.js';
 import { commercialRouter } from '../db/commercial/route.js';
 import { otherRouter } from '../db/other/route.js';
 import { reportRouter } from '../db/report/route.js';
+import { accRouter } from '../db/acc/route.js';
 
 const route = express.Router();
 
@@ -31,6 +32,9 @@ route.use('/store', storeRouter);
 
 // commercial routes
 route.use('/commercial', commercialRouter);
+
+// acc routes
+route.use('/acc', accRouter);
 
 // others routes
 route.use('/other', otherRouter);

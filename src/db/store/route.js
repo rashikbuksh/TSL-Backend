@@ -10,6 +10,7 @@ import * as unitOperations from './query/unit.js';
 import * as sizeOperations from './query/size.js';
 import * as colorOperations from './query/color.js';
 import * as issueHeaderOperations from './query/issue_header.js';
+import store from './schema.js';
 
 const storeRouter = Router();
 
@@ -47,6 +48,10 @@ storeRouter.get('/receive/:uuid', receiveOperations.select);
 storeRouter.get(
 	'/receive-entry-details/by/:receive_uuid',
 	receiveOperations.selectReceiveEntryDetails
+);
+storeRouter.get(
+	'/receive-with-entry',
+	receiveOperations.selectAllReceiveWithEntry
 );
 
 storeRouter.post('/issue-header', issueHeaderOperations.insert);

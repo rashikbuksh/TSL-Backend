@@ -9,11 +9,27 @@ import { createApi } from '../../../util/api.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as commercialSchema from '../../commercial/schema.js';
-
+import {
+	cost_center,
+	currency,
+	ledger,
+	voucher_entry_cost_center,
+} from '../../acc/schema.js';
 import { receive, receive_entry, vendor } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 
 const lcProperties = alias(vendor, 'lcProperties');
+
+const purchaseCostCenter = alias(cost_center, 'purchase_cost_center');
+const vendorCostCenter = alias(cost_center, 'vendor_cost_center');
+const purchaseVoucherEntryCostCenter = alias(
+	voucher_entry_cost_center,
+	'purchase_voucher_entry_cost_center'
+);
+const vendorVoucherEntryCostCenter = alias(
+	voucher_entry_cost_center,
+	'vendor_voucher_entry_cost_center'
+);
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -244,6 +260,93 @@ export async function selectReceiveEntryDetails(req, res, next) {
 		};
 
 		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectAllReceiveWithEntry(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const resultPromise = db
+		.select({
+			uuid: receive.uuid,
+			purchase_id: sql`CONCAT('SR', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
+			vendor_uuid: receive.vendor_uuid,
+			vendor_name: vendor.name,
+			total_price: sql`SUM(receive_entry.price::float8)`,
+			store_type: receive.store_type,
+			created_at: receive.created_at,
+			currency_uuid: sql`COALESCE(${receive.currency_uuid}, 'bz7Xt8T3rfjDAQT')`,
+			currency: currency.currency,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
+			purchase_cost_center_uuid: purchaseCostCenter.uuid,
+			vendor_cost_center_uuid: vendorCostCenter.uuid,
+			purchase_cost_center_amount: purchaseVoucherEntryCostCenter.amount,
+			vendor_cost_center_amount: vendorVoucherEntryCostCenter.amount,
+		})
+		.from(receive)
+		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
+		.leftJoin(receive_entry, eq(receive.uuid, receive_entry.receive_uuid))
+		.leftJoin(
+			currency,
+			eq(
+				sql`COALESCE(${receive.currency_uuid}, 'bz7Xt8T3rfjDAQT')`,
+				currency.uuid
+			)
+		)
+		.leftJoin(
+			purchaseCostCenter,
+			eq(receive.uuid, purchaseCostCenter.table_uuid)
+		)
+		.leftJoin(
+			vendorCostCenter,
+			eq(vendorCostCenter.table_uuid, receive.vendor_uuid)
+		)
+		.leftJoin(
+			purchaseVoucherEntryCostCenter,
+			eq(
+				purchaseVoucherEntryCostCenter.cost_center_uuid,
+				purchaseCostCenter.uuid
+			)
+		)
+		.leftJoin(
+			vendorVoucherEntryCostCenter,
+			eq(
+				vendorVoucherEntryCostCenter.cost_center_uuid,
+				vendorCostCenter.uuid
+			)
+		)
+		.groupBy(
+			description.uuid,
+			description.id,
+			description.store_type,
+			description.created_at,
+			vendor.uuid,
+			vendor.name,
+			description.currency_uuid,
+			currency.currency_name,
+			currency.symbol,
+			purchaseCostCenter.uuid,
+			vendorCostCenter.uuid,
+			purchaseVoucherEntryCostCenter.amount,
+			vendorVoucherEntryCostCenter.amount,
+			currency.currency
+		)
+		.orderBy(desc(description.id));
+
+	// if (s_type) {
+	// 	resultPromise.where(eq(description.store_type, s_type));
+	// }
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Description list',
+		};
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

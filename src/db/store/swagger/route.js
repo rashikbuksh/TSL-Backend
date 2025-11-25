@@ -679,6 +679,27 @@ const pathReceive = {
 			},
 		},
 	},
+	'/store/receive-with-entry': {
+		get: {
+			tags: ['store.receive'],
+			summary: 'Select all Receive with Entry',
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/store/receive',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 const pathVendor = {

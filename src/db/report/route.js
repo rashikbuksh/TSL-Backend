@@ -1,13 +1,18 @@
 import { Router } from 'express';
 
-import SE, { SED } from '../../util/swagger_example.js';
+import { pathReport } from './path.js';
 
 import * as reportOperations from './query/query.js';
 
+import { balanceReport } from './acc_report/balance.js';
+import {
+	chartOfAccountsReport,
+	chartOfAccountsReportTableView,
+} from './acc_report/chart_of_accounts.js';
+
 const reportRouter = Router();
 
-// store material report
-
+// * store material report
 reportRouter.get(
 	'/store-material-report/:start_date/:end_date',
 	reportOperations.storeMaterialReport
@@ -19,75 +24,19 @@ reportRouter.get(
 	reportOperations.storeVendorWiseMaterialReport
 );
 
+// ! ACCOUNTS REPORTS
+// * BALANCE REPORT
+reportRouter.get('/acc-balance-report', balanceReport);
+// * Chart of Accounts (Tree View)
+reportRouter.get('/chart-of-accounts', chartOfAccountsReport);
+// * Chart of Accounts (Table View)
+reportRouter.get(
+	'/chart-of-accounts-table-view',
+	chartOfAccountsReportTableView
+);
+
 export const pathReport = {
-	'/report/store-material-report/{start_date}/{end_date}': {
-		get: {
-			tags: ['report'],
-			summary: 'Store Material Report',
-			description: 'Store Material Report',
-			parameters: [
-				{
-					in: 'path',
-					name: 'start_date',
-					description: 'Start Date',
-					required: true,
-					schema: {
-						type: 'string',
-						example: '2024-10-02',
-					},
-				},
-				{
-					in: 'path',
-					name: 'end_date',
-					description: 'End Date',
-					required: true,
-					schema: {
-						type: 'string',
-						example: '2024-10-03',
-					},
-				},
-			],
-			responses: {
-				200: SED.storeMaterialReport,
-				400: SED.badRequest,
-				500: SED.internalServerError,
-			},
-		},
-	},
-	'/report/store-vendor-wise-material-report/{start_date}/{end_date}': {
-		get: {
-			tags: ['report'],
-			summary: 'Store Vendor Wise Material Report',
-			description: 'Store Vendor Wise Material Report',
-			parameters: [
-				{
-					in: 'path',
-					name: 'start_date',
-					description: 'Start Date',
-					required: true,
-					schema: {
-						type: 'string',
-						example: '2024-10-02',
-					},
-				},
-				{
-					in: 'path',
-					name: 'end_date',
-					description: 'End Date',
-					required: true,
-					schema: {
-						type: 'string',
-						example: '2024-10-03',
-					},
-				},
-			],
-			responses: {
-				200: SED.storeVendorWiseMaterialReport,
-				400: SED.badRequest,
-				500: SED.internalServerError,
-			},
-		},
-	},
+	...pathReport,
 };
 
 export const tagReport = [

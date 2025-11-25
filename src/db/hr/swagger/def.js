@@ -40,7 +40,7 @@ export const defHrUser = SED({
 	properties: {
 		uuid: SE.uuid(),
 		name: SE.string('John Doe'),
-		email: SE.string('john@fzl.com'),
+		email: SE.string('john@tsl.com'),
 		pass: SE.string('1234'),
 		designation_uuid: SE.uuid(),
 		can_access: SE.string('1,2,3'),
@@ -70,7 +70,7 @@ export const defPolicyAndNotice = SED({
 		type: SE.string('privacy'),
 		title: SE.string('Privacy Policy'),
 		sub_title: SE.string('Privacy Policy'),
-		url: SE.string('http://fzl.com'),
+		url: SE.string('http://tsl.com'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

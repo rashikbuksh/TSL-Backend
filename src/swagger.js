@@ -57,8 +57,8 @@ const swaggerSpec = swaggerJSDoc({
 		basePath: SERVER_URL,
 		openapi: '3.0.0',
 		info: {
-			title: 'FZL ERP API',
-			description: 'FZL API Documentation',
+			title: 'TSL API',
+			description: 'TSL API Documentation',
 			contact: { name: 'RBR', email: 'rafsan@fortunezip.com' },
 			version: '0.1.1',
 		},

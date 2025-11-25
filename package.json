@@ -1,5 +1,5 @@
 {
-	"name": "fzl-erp-backend",
+	"name": "tsl-backend",
 	"version": "1.0.0",
 	"main": "./src/server.js",
 	"type": "module",
@@ -16,7 +16,7 @@
 		"deploy": "git pull && bun install && bun run db-generate && bun run db-migrate && pm2 restart tsl-backend --update-env",
 		"deploy-local": "bun install && bun run db-generate && bun run db-migrate"
 	},
-	"author": "FZL ERP Team",
+	"author": "Synaptech Team",
 	"license": "ISC",
 	"description": "",
 	"dependencies": {

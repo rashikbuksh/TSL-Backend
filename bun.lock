@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "fzl-erp-backend",
+      "name": "tsl-backend",
       "dependencies": {
         "axios": "^1.13.2",
         "bcrypt": "^6.0.0",

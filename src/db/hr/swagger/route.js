@@ -34,7 +34,7 @@ export const pathHrUser = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					name: SE.string('John Doe'),
-					email: SE.string('john@fzl.com'),
+					email: SE.string('john@tsl.com'),
 					designation_uuid: SE.uuid(),
 					designation: SE.string('HR Manager'),
 					department_uuid: SE.uuid(),
@@ -74,7 +74,7 @@ export const pathHrUser = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					name: SE.string('John Doe'),
-					email: SE.string('john@fzl.com'),
+					email: SE.string('john@tsl.com'),
 					designation_uuid: SE.uuid(),
 					designation: SE.string('HR Manager'),
 					department_uuid: SE.uuid(),
@@ -100,7 +100,7 @@ export const pathHrUser = {
 			parameters: [SE.parameter_params('hr.user to update')],
 			requestBody: SE.requestBody({
 				name: SE.string('John Doe'),
-				email: SE.string('john@fzl.com'),
+				email: SE.string('john@tsl.com'),
 				designation_uuid: SE.uuid(),
 				ext: SE.string('562'),
 				phone: SE.string('01521533595'),
@@ -121,7 +121,7 @@ export const pathHrUser = {
 							},
 							email: {
 								type: 'string',
-								example: 'john@fzl.com',
+								example: 'john@tsl.com',
 							},
 							designation_uuid: {
 								type: 'string',
@@ -252,7 +252,7 @@ export const pathHrUser = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					name: SE.string('John Doe'),
-					email: SE.string('admin@fzl.com'),
+					email: SE.string('admin@tsl.com'),
 					designation_uuid: SE.uuid(),
 					designation: SE.string('Admin'),
 					ext: SE.string('123'),

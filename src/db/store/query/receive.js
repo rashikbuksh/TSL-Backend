@@ -1,22 +1,23 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { nanoid } from '../../../lib/nanoid.js';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import { createApi } from '../../../util/api.js';
-import * as hrSchema from '../../hr/schema.js';
-import db from '../../index.js';
-import * as commercialSchema from '../../commercial/schema.js';
 import {
 	cost_center,
 	currency,
 	ledger,
 	voucher_entry_cost_center,
 } from '../../acc/schema.js';
-import { receive, receive_entry, vendor } from '../schema.js';
+import * as commercialSchema from '../../commercial/schema.js';
+import * as hrSchema from '../../hr/schema.js';
+import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
+import { receive, receive_entry, vendor } from '../schema.js';
 
 const lcProperties = alias(vendor, 'lcProperties');
 
@@ -34,7 +35,7 @@ const vendorVoucherEntryCostCenter = alias(
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const receivePromise = db
+	const descriptionPromise = db
 		.insert(receive)
 		.values(req.body)
 		.returning({
@@ -42,11 +43,41 @@ export async function insert(req, res, next) {
 		});
 
 	try {
-		const data = await receivePromise;
+		// Insert description first to get the generated ID
+		const descriptionData = await descriptionPromise;
+		const generatedPurchaseId = descriptionData[0].insertedName;
+
+		const ledgerData = db
+			.select({ uuid: ledger.uuid })
+			.from(ledger)
+			.where(eq(ledger.identifier, 'store'));
+
+		const ledgerResult = await ledgerData;
+
+		// Now insert into cost_center using the generated ID
+		const costCenterPromise = db
+			.insert(cost_center)
+			.values({
+				uuid: nanoid(),
+				name: generatedPurchaseId, // Use the exact generated ID from description
+				ledger_uuid: ledgerResult[0]?.uuid || null,
+				table_name: 'purchase.description',
+				table_uuid: formData.uuid,
+				invoice_no: null,
+				created_at: formData.created_at,
+				created_by: formData.created_by,
+				updated_by: formData.updated_by || null,
+				updated_at: formData.updated_at || null,
+				remarks: formData.remarks || null,
+			})
+			.returning({ insertedName: cost_center.name });
+
+		const costCenterData = await costCenterPromise;
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
+			message: `${generatedPurchaseId} AND Cost Center ${costCenterData[0].insertedName} created`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -271,11 +302,10 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: receive.uuid,
-			purchase_id: sql`CONCAT('SR', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
+			receive_id: sql`CONCAT('R', to_char(receive.created_at, 'YY'), '-', LPAD(receive.id::text, 4, '0'))`,
 			vendor_uuid: receive.vendor_uuid,
 			vendor_name: vendor.name,
 			total_price: sql`SUM(receive_entry.price::float8)`,
-			store_type: receive.store_type,
 			created_at: receive.created_at,
 			currency_uuid: sql`COALESCE(${receive.currency_uuid}, 'bz7Xt8T3rfjDAQT')`,
 			currency: currency.currency,
@@ -321,7 +351,6 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 		.groupBy(
 			description.uuid,
 			description.id,
-			description.store_type,
 			description.created_at,
 			vendor.uuid,
 			vendor.name,

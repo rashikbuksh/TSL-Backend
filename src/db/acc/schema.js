@@ -128,12 +128,7 @@ export const restrictions_enum = acc.enum('restrictions_enum', [
 	'job_income',
 ]);
 
-export const identifierEnum = acc.enum('identifierEnum', [
-	'store_maintenance',
-	'store_rm',
-	'store_accessories',
-	'none',
-]);
+export const identifierEnum = acc.enum('identifierEnum', ['store', 'none']);
 
 export const ledger_sequence = acc.sequence('ledger_sequence', {
 	startWith: 1,

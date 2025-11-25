@@ -190,20 +190,12 @@ export async function getAccountsTableNames(req, res, next) {
 			label: 'LC',
 		},
 		{
-			value: 'purchase.description',
+			value: 'store.receive',
 			label: 'Store Purchase',
 		},
 		{
-			value: 'commercial.pi_cash',
-			label: 'Commercial Invoice',
-		},
-		{
-			value: 'purchase.vendor',
+			value: 'store.vendor',
 			label: 'Vendor',
-		},
-		{
-			value: 'public.party',
-			label: 'Party',
 		},
 	];
 

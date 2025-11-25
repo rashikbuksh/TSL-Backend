@@ -235,21 +235,26 @@ export async function getSelectedTableData(req, res, next) {
 
 	console.log(`Fetching data for table: ${table_name}`);
 
-	const option = [
-		{ value: 'commercial.lc', label: 'LC' },
-		{ value: 'store.receive', label: 'SR' },
-	];
+	const option = [{ value: 'store.receive', label: 'SR' }];
 
 	try {
-		if (['commercial.lc', 'store.receive'].includes(table_name)) {
+		if (['store.receive'].includes(table_name)) {
 			result = await db.execute(sql`
 						SELECT 
 							uuid as value,
 							concat(${sql.raw(`'${option.find((val) => val.value == table_name).label}'`)}, to_char(created_at, 'YY'::text), '-', id::text) as label
 						FROM ${sql.raw(table_name)};
 					`);
-		} else if (['store.vendor'].includes(table_name)) {
-			result = await db.execute(sql`
+		} else if (['store.vendor', 'commercial.lc'].includes(table_name)) {
+			result =
+				table_name === 'commercial.lc'
+					? await db.execute(sql`
+				SELECT 
+					uuid as value,
+					number as label
+				FROM ${sql.raw(table_name)};
+			`)
+					: await db.execute(sql`
 				SELECT 
 					uuid as value,
 					name as label

@@ -1,4 +1,4 @@
-import { SED } from '../../util/swagger_example.js';
+import SE, { SED } from '../../util/swagger_example.js';
 
 export const pathReport = {
 	'/report/store-material-report/{start_date}/{end_date}': {

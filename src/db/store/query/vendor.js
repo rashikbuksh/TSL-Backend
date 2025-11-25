@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { nanoid } from '../../../lib/nanoid.js';
 
 import { vendor } from '../schema.js';
 
@@ -18,11 +19,37 @@ export async function insert(req, res, next) {
 		.returning({ insertedName: vendor.name });
 
 	try {
-		const data = await vendorPromise;
+		const vendorData = await vendorPromise;
+		const ledgerPromise = db
+			.select({ uuid: ledger.uuid })
+			.from(ledger)
+			.where(eq(ledger.name, 'Trade Payable'));
+
+		const ledgerData = await ledgerPromise;
+
+		const costCenterPromise = db
+			.insert(cost_center)
+			.values({
+				uuid: nanoid(),
+				name: req.body.name, // Use the exact generated ID from description
+				ledger_uuid: ledgerData[0]?.uuid,
+				table_name: 'vendor',
+				table_uuid: req.body.uuid,
+				invoice_no: null,
+				created_at: req.body.created_at,
+				created_by: req.body.created_by,
+				updated_by: req.body.updated_by || null,
+				updated_at: req.body.updated_at || null,
+				remarks: req.body.remarks || null,
+			})
+			.returning({ insertedName: cost_center.name });
+
+		const costCenterData = await costCenterPromise;
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
+			message: `${vendorData[0].insertedId} AND ${costCenterData[0].insertedName} created`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -83,7 +110,6 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	
 	const vendorPromise = db
 		.select({
 			uuid: vendor.uuid,

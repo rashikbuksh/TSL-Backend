@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { pathReport } from './path.js';
+import * as ReportPaths from './path.js';
 
 import * as reportOperations from './query/query.js';
 
@@ -36,7 +36,7 @@ reportRouter.get(
 );
 
 export const pathReport = {
-	...pathReport,
+	...ReportPaths.pathReport,
 };
 
 export const tagReport = [

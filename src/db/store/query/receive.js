@@ -62,13 +62,13 @@ export async function insert(req, res, next) {
 				name: generatedReceiveId, // Use the exact generated ID from receive
 				ledger_uuid: ledgerResult[0]?.uuid || null,
 				table_name: 'store.receive',
-				table_uuid: formData.uuid,
+				table_uuid: req.body.uuid,
 				invoice_no: null,
-				created_at: formData.created_at,
-				created_by: formData.created_by,
-				updated_by: formData.updated_by || null,
-				updated_at: formData.updated_at || null,
-				remarks: formData.remarks || null,
+				created_at: req.body.created_at,
+				created_by: req.body.created_by,
+				updated_by: req.body.updated_by || null,
+				updated_at: req.body.updated_at || null,
+				remarks: req.body.remarks || null,
 			})
 			.returning({ insertedName: cost_center.name });
 

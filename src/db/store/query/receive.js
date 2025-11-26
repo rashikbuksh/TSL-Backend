@@ -79,7 +79,7 @@ export async function insert(req, res, next) {
 			type: 'insert',
 			message: `${generatedReceiveId} AND Cost Center ${costCenterData[0].insertedName} created`,
 		};
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: receiveData });
 	} catch (error) {
 		await handleError({
 			error,

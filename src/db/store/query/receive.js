@@ -355,13 +355,14 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 			vendor.uuid,
 			vendor.name,
 			receive.currency_uuid,
+			currency.uuid,
+			currency.currency,
 			currency.currency_name,
 			currency.symbol,
 			purchaseCostCenter.uuid,
 			vendorCostCenter.uuid,
 			purchaseVoucherEntryCostCenter.amount,
-			vendorVoucherEntryCostCenter.amount,
-			currency.currency
+			vendorVoucherEntryCostCenter.amount
 		)
 		.orderBy(desc(receive.id));
 

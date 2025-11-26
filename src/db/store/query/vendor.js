@@ -50,7 +50,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${vendorData[0].insertedId} AND ${costCenterData[0].insertedName} created`,
+			message: `${vendorData[0].insertedName} AND ${costCenterData[0].insertedName} created`,
 		};
 		return await res.status(201).json({ toast, data: vendorData });
 	} catch (error) {

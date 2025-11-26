@@ -35,7 +35,7 @@ const vendorVoucherEntryCostCenter = alias(
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const descriptionPromise = db
+	const receivePromise = db
 		.insert(receive)
 		.values(req.body)
 		.returning({
@@ -43,9 +43,9 @@ export async function insert(req, res, next) {
 		});
 
 	try {
-		// Insert description first to get the generated ID
-		const descriptionData = await descriptionPromise;
-		const generatedPurchaseId = descriptionData[0].insertedName;
+		// Insert receive first to get the generated ID
+		const receiveData = await receivePromise;
+		const generatedReceiveId = receiveData[0].insertedName;
 
 		const ledgerData = db
 			.select({ uuid: ledger.uuid })
@@ -59,9 +59,9 @@ export async function insert(req, res, next) {
 			.insert(cost_center)
 			.values({
 				uuid: nanoid(),
-				name: generatedPurchaseId, // Use the exact generated ID from description
+				name: generatedReceiveId, // Use the exact generated ID from receive
 				ledger_uuid: ledgerResult[0]?.uuid || null,
-				table_name: 'purchase.description',
+				table_name: 'store.receive',
 				table_uuid: formData.uuid,
 				invoice_no: null,
 				created_at: formData.created_at,
@@ -77,7 +77,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${generatedPurchaseId} AND Cost Center ${costCenterData[0].insertedName} created`,
+			message: `${generatedReceiveId} AND Cost Center ${costCenterData[0].insertedName} created`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -349,12 +349,12 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 			)
 		)
 		.groupBy(
-			description.uuid,
-			description.id,
-			description.created_at,
+			receive.uuid,
+			receive.id,
+			receive.created_at,
 			vendor.uuid,
 			vendor.name,
-			description.currency_uuid,
+			receive.currency_uuid,
 			currency.currency_name,
 			currency.symbol,
 			purchaseCostCenter.uuid,
@@ -363,17 +363,17 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 			vendorVoucherEntryCostCenter.amount,
 			currency.currency
 		)
-		.orderBy(desc(description.id));
+		.orderBy(desc(receive.id));
 
 	// if (s_type) {
-	// 	resultPromise.where(eq(description.store_type, s_type));
+	// 	resultPromise.where(eq(receive.store_type, s_type));
 	// }
 	try {
 		const data = await resultPromise;
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'Description list',
+			message: 'Receive list',
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

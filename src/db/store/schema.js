@@ -113,7 +113,7 @@ export const receive = store.table('receive', {
 	remarks: text('remarks').default(null),
 	currency_uuid: defaultUUID('currency_uuid')
 		.references(() => currency.uuid)
-		.default(sql`'bz7Xt8T3rfjDAQT'`),
+		.default(sql`'LA3bxacqCwCeM0D'`),
 });
 
 export const issue_header_enum = pgEnum('issue_header', [

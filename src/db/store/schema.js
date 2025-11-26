@@ -93,6 +93,8 @@ export const store_receive_sequence = store.sequence('store_receive_sequence', {
 	increment: 1,
 });
 
+export const typeEnum = pgEnum('store_type', ['store']);
+
 export const receive = store.table('receive', {
 	uuid: uuid_primary,
 	id: integer('id')
@@ -114,6 +116,7 @@ export const receive = store.table('receive', {
 	currency_uuid: defaultUUID('currency_uuid')
 		.references(() => currency.uuid)
 		.default(sql`'LA3bxacqCwCeM0D'`),
+	type: typeEnum('type').default('store'),
 });
 
 export const issue_header_enum = pgEnum('issue_header', [

@@ -87,6 +87,8 @@ export const defReceive = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		inventory_date: SE.date_time(),
+		type: SE.string('store'),
+		currency_uuid: SE.uuid(),
 	},
 	xml: 'Store/Receive',
 });

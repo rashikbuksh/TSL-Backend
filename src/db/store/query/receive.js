@@ -188,6 +188,7 @@ export async function selectAll(req, res, next) {
 			currency: currency.currency,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
+			type: receive.type,
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))
@@ -242,6 +243,7 @@ export async function select(req, res, next) {
 			currency: currency.currency,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
+			type: receive.type,
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))
@@ -325,6 +327,7 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 			vendor_cost_center_uuid: vendorCostCenter.uuid,
 			purchase_cost_center_amount: purchaseVoucherEntryCostCenter.amount,
 			vendor_cost_center_amount: vendorVoucherEntryCostCenter.amount,
+			type: receive.type,
 		})
 		.from(receive)
 		.leftJoin(vendor, eq(receive.vendor_uuid, vendor.uuid))
@@ -372,7 +375,8 @@ export async function selectAllReceiveWithEntry(req, res, next) {
 			purchaseCostCenter.uuid,
 			vendorCostCenter.uuid,
 			purchaseVoucherEntryCostCenter.amount,
-			vendorVoucherEntryCostCenter.amount
+			vendorVoucherEntryCostCenter.amount,
+			receive.type
 		)
 		.orderBy(desc(receive.id));
 

@@ -149,7 +149,7 @@ export async function selectCostCenter(req, res, next) {
 			value: accountSchema.cost_center.uuid,
 			label: sql`CASE
 						WHEN ${accountSchema.ledger.identifier} IS NOT NULL AND ${accountSchema.ledger.identifier} != 'none'
-							THEN CONCAT(${accountSchema.cost_center.name}, ' - ', (SELECT pd.lc_number FROM purchase.description pd WHERE pd.uuid = ${accountSchema.cost_center.table_uuid}))
+							THEN CONCAT(${accountSchema.cost_center.name}, ' - ', (SELECT lc.number as lc_number FROM store.receive sr LEFT JOIN commercial.lc lc ON sr.lc_uuid = lc.uuid WHERE sr.uuid = ${accountSchema.cost_center.table_uuid}))
 						ELSE ${accountSchema.cost_center.name}
        				END`,
 			invoice_no: accountSchema.cost_center.invoice_no,

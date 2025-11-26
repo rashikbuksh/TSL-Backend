@@ -9,6 +9,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { vendor } from '../schema.js';
+import { ledger, cost_center } from '../../acc/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

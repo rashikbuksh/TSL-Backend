@@ -19,6 +19,7 @@ import { sql } from 'drizzle-orm';
 import * as commercialSchema from '../commercial/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
+import { currency } from '../acc/schema.js';
 
 const store = pgSchema('store');
 
@@ -110,6 +111,9 @@ export const receive = store.table('receive', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	currency_uuid: defaultUUID('currency_uuid')
+		.references(() => currency.uuid)
+		.default(sql`'bz7Xt8T3rfjDAQT'`),
 });
 
 export const issue_header_enum = pgEnum('issue_header', [

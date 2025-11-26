@@ -184,6 +184,10 @@ export async function selectAll(req, res, next) {
 				where store.receive_entry.receive_uuid = receive.uuid
 			)`),
 			inventory_date: receive.inventory_date,
+			currency_uuid: receive.currency_uuid,
+			currency: currency.currency,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))
@@ -196,6 +200,7 @@ export async function selectAll(req, res, next) {
 			lcProperties,
 			eq(commercialSchema.lc.vendor_uuid, lcProperties.uuid)
 		)
+		.leftJoin(currency, eq(receive.currency_uuid, currency.uuid))
 		.orderBy(desc(receive.created_at));
 
 	const toast = {
@@ -233,6 +238,10 @@ export async function select(req, res, next) {
 			updated_at: receive.updated_at,
 			remarks: receive.remarks,
 			inventory_date: receive.inventory_date,
+			currency_uuid: receive.currency_uuid,
+			currency: currency.currency,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
 		})
 		.from(receive)
 		.leftJoin(hrSchema.users, eq(receive.created_by, hrSchema.users.uuid))
@@ -245,6 +254,7 @@ export async function select(req, res, next) {
 			lcProperties,
 			eq(commercialSchema.lc.vendor_uuid, lcProperties.uuid)
 		)
+		.leftJoin(currency, eq(receive.currency_uuid, currency.uuid))
 		.where(eq(receive.uuid, req.params.uuid));
 
 	try {
